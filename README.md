@@ -1,6 +1,12 @@
 # About Pre-Golem-Alpha-0.0.0.4.0
 
-## Name
+## Pregolem
+
+Pregolem is the set of multilingual and semiotic tools written in
+Python (and maybe some other programming languages in the future) with
+the focus on post-structural semantic analysis.
+
+## The name
 
 The name is based on the Stanisław Lem's story Golem XIV [1]. This is
 obviously the ancestor of Golem XIV in the very early stages, so the
@@ -13,6 +19,10 @@ adjective with the meaning "extremely big".
 
 If you are interested into the stories around Pregolem, check file
 stories/golem.org.
+
+## Contributors
+
+- Milos Rancic, millos@gmail.com
 
 # Footnotes
 
