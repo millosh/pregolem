@@ -22,7 +22,7 @@ If you are interested into the stories around Pregolem, check the file
 
 # Files
 
-- 
+- [stories/golem.org](stories/golem.org)
 
 # Contributors
 
