@@ -20,9 +20,9 @@ adjective with the meaning "extremely big".
 If you are interested into the stories around Pregolem, check file
 stories/golem.org.
 
-## Contributors
+# Contributors
 
-- Milos Rancic, millos@gmail.com
+- Milos Rancic, millosh@gmail.com
 
 # Footnotes
 
