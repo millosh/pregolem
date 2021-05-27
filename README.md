@@ -77,6 +77,7 @@ above, you are going to find documentation for particular program).
 # Contributors
 
 - Milos Rancic, millosh@gmail.com
+- Uroš Krčadinac, uros.krcadinac@gmail.com
 
 If you are interested to participate, send an email to
 millosh@gmail.com with your motives.
