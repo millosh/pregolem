@@ -81,6 +81,11 @@ above, you are going to find documentation for particular program).
 If you are interested to participate, send an email to
 millosh@gmail.com with your motives.
 
+# License
+
+Unless otherwise specified, the content is licensed under GNU AGPL v.3
+license.
+
 # Footnotes
 
 [1] https://en.wikipedia.org/wiki/Golem_XIV
