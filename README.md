@@ -60,6 +60,7 @@ current form, it seems redundant (if you click on any of the links
 above, you are going to find documentation for particular program).
 
 - [Setting up Anaconda](docs/anaconda.org)
+- [Installing initial modules](docs/python_modules.org)
 
 # Files
 
