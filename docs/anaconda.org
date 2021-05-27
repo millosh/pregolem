@@ -1,0 +1,51 @@
+* Setting up pyenv and Anaconda for Pregolem
+** Introduction
+
+This documentation has been written based on the documents [[https://docs.anaconda.com/anaconda/install/linux/][Installing
+on Linux]] and [[https://problemsolvingwithpython.com/01-Orientation/01.05-Installing-Anaconda-on-Linux/][Installing Anaconda on Linux]]. If you are not using Linux,
+you can find steps needed for Anaconda installation on MS Windows and
+MacOS in the menu on the left side of the page.
+
+Referent distribution inside of the document is Ubuntu 18.04, while
+our referent distribution is Debian 10.
+
+** Install pyenv (if you prefer it)
+
+We are not going to stick with pyenv as it doesn't allow multiple
+installations of the same version of Python and we need that.
+
+Go to the [[https://github.com/pyenv/pyenv][pyenv GitHub repository]], read documentation (README file)
+and install it.
+
+Find the latest Python 3.8 version at the [[https://www.python.org/downloads/][Python download page]] and
+install it by using pyenv command: pyenv install 3.8.10
+
+Note that the both the latest version of Python 3.8 could be different
+when you read this documentation. To be sure to have the right
+version, you should first [[https://www.python.org/downloads/][Python download page]] and check what is the
+latest version of that Python branch.
+
+** Install Anaconda
+
+- Install necessary software requirements. In my case, it's:
+  - apt update
+  - apt install libgl1-mesa-glx libegl1-mesa libxrandr2 libxrandr2
+    libxss1 libxcursor1 libxcomposite1 libasound2 libxi6 libxtst6
+- Go to the [[Anaconda download page]] and download the version for x86
+  architecture. In our case, the file is
+  Anaconda3-2021.05-Linux-x86_64.sh.
+- Run the installer and install Anaconda:
+  - bash Anaconda3-2021.05-Linux-x86_64.sh
+- Activate your Anaconda configuration:
+  - by activating your .bashrc
+    - source ~/.bashrc
+  - by activating conda
+    - conda activate
+- Create the new environment, install the latest stable Python
+  version and activate the new environment with conda
+  - conda create --name sentiments python=3.9.5
+  - conda activate sentiments
+
+* Notes
+- [1] https://docs.anaconda.com/anaconda/install/linux/
+- [2] https://problemsolvingwithpython.com/01-Orientation/01.05-Installing-Anaconda-on-Linux/

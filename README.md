@@ -45,6 +45,20 @@ really into this, you will have environments set up properly. If you
 are interested into a particular feature, you should check the
 requirements for that feature.
 
+Except this README file, documentation has been written in GNU Emacs
+Org Mode format. If you are not using any Org Mode client, it should
+be anyway relatively fine for you to read the text in a regular text
+editor or viewer.
+
+You should be proficient in any reasonably well developed GNU
+environment. It could be about Linux shell, but also
+[MSYS2](https://www.msys2.org/) (if you are using MS Windows), MacOS
+terminal or even [Termux](https://termux.com/) on Android. It is
+possible that more basic documentation about using these programs will
+be written in the future, but as long as Internet exists in the
+current form, it seems redundant (if you click on any of the links
+above, you are going to find documentation for particular program).
+
 - [Setting up Anaconda](docs/anaconda.org)
 
 # Files
