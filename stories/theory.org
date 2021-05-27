@@ -1,0 +1,13 @@
+* IN PROGRESS Towards post-structural semantic analysis
+Not only contemporary programming tools and processing power allow us
+to make complex linguistic and semiotic analysis, but a lot of the
+methods for post-structural analysis exist for decades, as well as
+many computational linguistic tools have been already implementing
+post-structural methods for a while. Consequently, it's more about
+putting things into the context and naming them as such than inventing
+completely new tools.
+
+It's mostly about our perspective on the matter we analyze and our
+process of analysis.
+
+(To be continued...)
