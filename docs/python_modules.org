@@ -1,0 +1,7 @@
+* spacy_udpipe
+** Install
+- pip install spacy_udpipe
+** Test
+- cd tests
+- (check the code with your preferred editor)
+- python test-spacy_udpipe.py
