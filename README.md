@@ -2,7 +2,7 @@
 
 ## Name
 
-The name is based on the Stanisław Lem story Golem XIV [1]. This is
+The name is based on the Stanisław Lem's story Golem XIV [1]. This is
 obviously the ancestor of Golem XIV in the very early stages, so the
 name corresponds with that fact. Numbers in the name are also the part
 of the super-major versions, while you should look into the git for
