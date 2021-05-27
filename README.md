@@ -38,7 +38,7 @@ not trivial and require various compromises. The first one being usage
 of different Python installations for different purposes (thus, better
 [Anaconda](https://www.anaconda.com/) than
 [pyenv](https://github.com/pyenv/pyenv), but you could use any of them
-if you have developed your own workaround.
+if you have developed your own workaround).
 
 Every particular program will have defined requirements. If you are
 really into this, you will have environments set up properly. If you
