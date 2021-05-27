@@ -45,11 +45,14 @@ really into this, you will have environments set up properly. If you
 are interested into a particular feature, you should check the
 requirements for that feature.
 
-* [Setting up Anaconda](docs/anaconda.org)
+- [Setting up Anaconda](docs/anaconda.org)
 
 # Files
 
-- [stories/golem.org](stories/golem.org)
+- Documentation
+  - [Setting up Anaconda](docs/anaconda.org)
+- Stories
+  - [Golem stories](stories/golem.org)
 
 # Contributors
 
