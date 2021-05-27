@@ -1,0 +1,22 @@
+* Golem and Pregolem
+** Introduction
+The name is based on the Stanisław Lem story Golem XIV [1]. This is
+obviously the ancestor of Golem XIV in the very early stages, so the
+name corresponds with that fact. Numbers in the name are also the part
+of the super-major versions, while you should look into the git for
+the ongoing versions.
+
+If written as one word -- "pregolem" -- it's also a Serbian regional
+adjective with the meaning "extremely big".
+** Names
+- GolemXIV is the original
+- The previous iterration of the program wrongly namded GolemXV is
+  Pregolem-Alpha-0.0.0.1.0
+- The previous iterration of the program wrongly namded GolemXVI is
+  Pregolem-Alpha-0.0.0.2.0
+- The previous iterration of the program wrongly namded GolemXVI is
+  Pregolem-Alpha-0.0.0.3.0
+- The current iterration of the program wrongly namded GolemXVII is
+  Pregolem-Alpha-0.0.0.4.0
+** Footnotes
+[1] https://en.wikipedia.org/wiki/Golem_XIV

@@ -11,6 +11,9 @@ the ongoing versions.
 If written as one word -- "pregolem" -- it's also a Serbian regional
 adjective with the meaning "extremely big".
 
+If you are interested into the stories around Pregolem, check file
+stories/golem.org.
+
 # Footnotes
 
 [1] https://en.wikipedia.org/wiki/Golem_XIV
