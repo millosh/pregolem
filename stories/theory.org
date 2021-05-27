@@ -1,3 +1,7 @@
+* Before you read
+At this moment, this is the set of various finished and unfinished
+texts related to the theoretical background of our work here. It will
+be rearranged in the future into more sensible sections.
 * IN PROGRESS Towards post-structural semantic analysis
 Not only contemporary programming tools and processing power allow us
 to make complex linguistic and semiotic analysis, but a lot of the
@@ -11,3 +15,18 @@ It's mostly about our perspective on the matter we analyze and our
 process of analysis.
 
 (To be continued...)
+* UDPipe models
+This software depends on UDPIPE models through the Spacy model
+"spacy_udpipe".
+
+UDPipe models can't be distributed commercially, as they have been
+licensed under CC-BY-NC-SA license.
+
+"The Universal Dependencies 2.5 models contain 94 models of 61
+languages, each consisting of a tokenizer, tagger, lemmatizer and
+dependency parser, all trained using the UD data. We used the original
+train-dev-test split, but for treebanks with only train and no dev
+data we used last 10% of the train data as dev data. We produce models
+only for treebanks with at least 1000 training words."
+
+You can read about the models [[https://ufal.mff.cuni.cz/udpipe/1/models][here]].

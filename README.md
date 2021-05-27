@@ -66,8 +66,10 @@ above, you are going to find documentation for particular program).
 
 - Documentation
   - [Setting up Anaconda](docs/anaconda.org)
+  - [Installing initial modules](docs/python_modules.org)
 - Stories
   - [Golem stories](stories/golem.org)
+  - [Theory](stories/theory.org)
 
 # Contributors
 
