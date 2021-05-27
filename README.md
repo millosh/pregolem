@@ -70,6 +70,9 @@ above, you are going to find documentation for particular program).
 - Stories
   - [Golem stories](stories/golem.org)
   - [Theory](stories/theory.org)
+- Tests
+  - [spacy_udpipe](test-spacy_udpipe.py)
+  - [spacy_wordnet](test-spacy_wordnet.py)
 
 # Contributors
 
