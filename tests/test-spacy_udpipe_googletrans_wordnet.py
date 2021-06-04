@@ -38,7 +38,7 @@ def add_synset(word_input,text_working,lemma_working,pos_working,dep_working):
     synset = lemma_working + "." + pos_spacy_wordnet[pos_working] + ".01"
     synword = swn.senti_synset(synset)
     word_working['synset'] = synset
-    word_working['part of speech score'] = synword.pos_score()
+    word_working['positivity score'] = synword.pos_score()
     word_working['negativity score'] = synword.neg_score()
     word_working['objectivity score'] = synword.obj_score()
     if 'list' not in word_input['translation']:
