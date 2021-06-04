@@ -54,7 +54,10 @@ for token_input in doc_input:
     pos_input = token_input.pos_
     dep_input = token_input.dep_
     word_input = add_word(input_language,text_input,lemma_input,pos_input,dep_input)
-    translation = trans.translate(lemma_input,src=input_language,dest=working_language).text
+    input_translation = trans.translate(lemma_input,src=input_language,dest=working_language)
+    print(input_translation)
+    print(dir(input_translation))
+    translation = input_translation.text
     word_input['translation'] = {
         'primary translation': translation,
     }
