@@ -12,6 +12,8 @@ working_language = 'en'
 #working_language = sys.argv[3]
 spacy_udpipe.download(input_language)
 spacy_udpipe.download(working_language)
+nltk.download('wordnet')
+nltk.download('sentiwordnet')
 nlp_input = spacy_udpipe.load(input_language)
 nlp_working = spacy_udpipe.load(working_language)
 trans = Translator()
@@ -54,10 +56,7 @@ for token_input in doc_input:
     pos_input = token_input.pos_
     dep_input = token_input.dep_
     word_input = add_word(input_language,text_input,lemma_input,pos_input,dep_input)
-    input_translation = trans.translate(lemma_input,src=input_language,dest=working_language)
-    print(input_translation)
-    print(dir(input_translation))
-    translation = input_translation.text
+    translation = trans.translate(lemma_input,src=input_language,dest=working_language).text
     word_input['translation'] = {
         'primary translation': translation,
     }

@@ -1,6 +1,5 @@
 * Setting up pyenv and Anaconda for Pregolem
 ** Introduction
-
 This documentation has been written based on the documents [[https://docs.anaconda.com/anaconda/install/linux/][Installing
 on Linux]] and [[https://problemsolvingwithpython.com/01-Orientation/01.05-Installing-Anaconda-on-Linux/][Installing Anaconda on Linux]]. If you are not using Linux,
 you can find steps needed for Anaconda installation on MS Windows and
@@ -8,9 +7,7 @@ MacOS in the menu on the left side of the page.
 
 Referent distribution inside of the document is Ubuntu 18.04, while
 our referent distribution is Debian 10.
-
 ** Install pyenv (if you prefer it)
-
 We are not going to stick with pyenv as it doesn't allow multiple
 installations of the same version of Python and we need that.
 
@@ -24,16 +21,13 @@ Note that the both the latest version of Python 3.8 could be different
 when you read this documentation. To be sure to have the right
 version, you should first [[https://www.python.org/downloads/][Python download page]] and check what is the
 latest version of that Python branch.
-
-** Install Anaconda
-
+** Install Anaconda and relevant pythong modules and language models
 - Install necessary software requirements. In my case, it's:
   - apt update
-  - apt install libgl1-mesa-glx libegl1-mesa libxrandr2 libxrandr2
-    libxss1 libxcursor1 libxcomposite1 libasound2 libxi6 libxtst6
-- Go to the [[Anaconda download page]] and download the version for x86
+  - apt install -y autoconf automake build-essential curl gcc libasound2 libbz2-dev libegl1-mesa libgl1-mesa-glx libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev libssl-dev libxcomposite1 libxcursor1 libxi6 libxrandr2 libxss1 libxtst6 llvm make tk-dev wget xz-utils zlib1g-dev
+- Go to the [[https://www.anaconda.com/products/individual][Anaconda download page]] and download the version for x86
   architecture. In our case, the file is
-  Anaconda3-2021.05-Linux-x86_64.sh.
+  [[https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh][Anaconda3-2021.05-Linux-x86_64.sh]].
 - Run the installer and install Anaconda:
   - bash Anaconda3-2021.05-Linux-x86_64.sh
 - Activate your Anaconda configuration:
@@ -45,6 +39,26 @@ latest version of that Python branch.
   version and activate the new environment with conda
   - conda create --name sentiments python=3.9.5
   - conda activate sentiments
+- Update pip
+  - pip install -U pip
+- It's important to install first the following packages, then to run
+  automatic installation at the end becuase of the defining versions
+  triggered by spacy-udpipe
+  - spacy-udpipe
+    - pip install spacy_udpipe
+- Download main Spacy English language model
+  - python -m spacy download en_core_web_lg en
+- Find the latest anaconda-*.list file and replace it with the name
+  - grep "pypi$" conda-20210606130657.list | awk '{a=a " " $1} END {print "pip install" a;}' | sh
+- Fix googletrans error ([[https://stackoverflow.com/questions/52455774/googletrans-stopped-working-with-error-nonetype-object-has-no-attribute-group][ref]])
+  - pip uninstall googletrans
+  - pip install googletrans==3.1.0a0
+** Test
+- cd tests
+- (check the code with your preferred editor)
+- python test-spacy_udpipe.py
+- python test-spacy_wordnet.py
+- python test-spacy_udpipe_googletrans_wordnet.py
 
 * Notes
 - [1] https://docs.anaconda.com/anaconda/install/linux/
