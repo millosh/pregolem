@@ -218,7 +218,8 @@ def process_tokens(paragraphs,what,args):
                 elif what == 'count-translate':
                     tw += count_transenti(token,args)
                 tn += 1
-    print(tw)
+    if what == 'count-translate':
+        print(tw)
     return paragraphs
 
 def main():
