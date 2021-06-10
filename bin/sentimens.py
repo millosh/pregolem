@@ -238,5 +238,6 @@ def main():
         paragraphs = process_text(args)
         paragraphs = get_sentences(paragraphs,args)
         paragraphs = process_tokens(paragraphs,"count-translate",args)
+
 if __name__ == "__main__":
     main()
