@@ -243,12 +243,18 @@ def process_tokens(paragraphs,what,args,data):
 
 def main():
     args, data = get_args()
-    # ./sentiment.py --command analyze --input input-text.txt --output-csv output-table.csv --ascending no --sort-by polarity
     if args['command'] == 'process':
+        # python sentimens.py --email your@email --command process --input input/file
+        # python sentimens.py --email your@email --command process --input-text "input text"
+        ## --email: optional and used for translation provider MyMemory
+        ##          cf. https://translate-python.readthedocs.io/en/latest/providers.html
+        ##              https://mymemory.translated.net/doc/usagelimits.php
         paragraphs = process_text(args,data)
         paragraphs = get_sentences(paragraphs,args,data)
         paragraphs = process_tokens(paragraphs,"process",args,data)
     elif args['command'] == 'count-translate':
+        # python sentimens.py --command count-translate --input input/file
+        # python sentimens.py --command count-translate --input-text "input text"
         paragraphs = process_text(args,data)
         paragraphs = get_sentences(paragraphs,args,data)
         paragraphs = process_tokens(paragraphs,"count-translate",args,data)
