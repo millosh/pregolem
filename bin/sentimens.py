@@ -31,8 +31,6 @@ def get_arg(arg,args):
 
 def get_args():
     args = {}
-    data = {}
-    sentiments = {}
     # timestamps
     args['start time'] = time.strftime("%Y-%m-%d %H:%M:%S")
     default_timestamp = '2020-08-24 12:00'
@@ -81,17 +79,7 @@ def get_args():
         'ADJ': 'a',
         'ADV': 'r',
     }
-    # historical
-    args = get_arg('--input-csv',args)
-    args = get_arg('--output-csv',args)
-    args = get_arg('--root-dir',args)
-    args = get_arg('--sort-by',args)
-    args = get_arg('--ascending',args)
-    if 'ascending' in args:
-        if args['ascending'].lower() == "yes":
-            args['ascdesc'] = False
-        elif args['ascending'].lower() == "no":
-            args['ascdesc'] = True
+    #
     if 'root-dir' not in args:
         args['root-dir'] = "."
     #if not exists(args['root-dir']):
@@ -102,19 +90,11 @@ def get_args():
     args = get_arg('--data-dir',args)
     if 'data-dir' not in args:
         args['data-dir'] = args['root-dir'] + "/data"
-    args = get_arg('--transkripts-dir',args)
-    if 'transkripts-dir' not in args:
-        args['transkripts-dir'] = args['data-dir'] + "/transkripts"
     #if not exists(args['data-dir']):
     #    os.mkdir(args['data-dir'])
-    args = get_arg('--min-polarity',args)
-    args = get_arg('--max-polarity',args)
-    args = get_arg('--min-subjectivity',args)
-    args = get_arg('--max-subjectivity',args)
-    args = get_arg('--topics-dir',args)
-    return args, data
+    return args
 
-def add_word(language,token,lemma,pos,args,data):
+def add_word(language,token,lemma,pos,args):
     word = {
         'language': language,
         'token': token,
@@ -123,8 +103,8 @@ def add_word(language,token,lemma,pos,args,data):
     }
     return word
 
-def add_synset(language,lemma,pos,args,data):
-    working_token = add_word(language,None,lemma,pos,args,data)
+def add_synset(language,lemma,pos,args):
+    working_token = add_word(language,None,lemma,pos,args)
     wordnet_token = args['nlp-working'](lemma)[0]
     working_token['wordnet token'] = wordnet_token
     try:
@@ -141,7 +121,7 @@ def add_synset(language,lemma,pos,args,data):
         working_token['sentiment token'] = None
     return working_token
 
-def process_text(args,data):
+def process_text(args):
     paragraphs = {}
     protopars = re.split("\n",args['input-text'])
     pmin = 0
@@ -156,7 +136,7 @@ def process_text(args,data):
             }
     return paragraphs
     
-def get_sentences(paragraphs,args,data):
+def get_sentences(paragraphs,args):
     pmin = 0
     pmax = len(list(paragraphs.keys()))
     prev = ''
@@ -176,7 +156,7 @@ def get_sentences(paragraphs,args,data):
                 sn += 1
     return paragraphs
 
-def count_transenti(token,args,data):
+def count_transenti(token,args):
     ### TODO: develop a method to translate words separately from the rest
     ###       of the engine
     if token.pos_ in args['relevant parts of speech']:
@@ -185,7 +165,7 @@ def count_transenti(token,args,data):
         tw = 0
     return tw
 
-def get_transenti(token,args,data):
+def get_transenti(token,args):
     working_entity = {
         'positivity score': None,
         'negativity score': None,
@@ -203,18 +183,18 @@ def get_transenti(token,args,data):
         nwords = len(translation.split(" "))
         if nwords == 1:
             working_lemma = translation
-            working_token = add_synset(args['working-language'],working_lemma,token.pos_,args,data)
+            working_token = add_synset(args['working-language'],working_lemma,token.pos_,args)
             # TODO: token._.wordnet.wordnet_domains()
             working_entity['working tokens'].append(working_token)
         else:
             wdoc = args['nlp-working'](translation)
             working_entity['sentiment words'] = []
             for wtoken in wdoc:
-                working_token = add_synset(args['working-language'],wtoken.lemma_,wtoken.pos_,args,data)
+                working_token = add_synset(args['working-language'],wtoken.lemma_,wtoken.pos_,args)
                 working_entity['working tokens'].append(working_token)
     return working_entity
 
-def process_tokens(paragraphs,what,args,data):
+def process_tokens(paragraphs,what,args):
     tw = 0
     pmin = 0
     pmax = len(list(paragraphs.keys()))
@@ -228,7 +208,7 @@ def process_tokens(paragraphs,what,args,data):
             tn = 0
             for token in doc:
                 if what == 'process':
-                    working_entity = get_transenti(token,args,data)
+                    working_entity = get_transenti(token,args)
                     print(pkey, ":::", skey, ":::", tn, ":::", token.text, ":::",)
                     paragraphs[pkey]['sentences'][skey]['tokens'][tn] = {
                         'text': str(token.text),
@@ -236,7 +216,7 @@ def process_tokens(paragraphs,what,args,data):
                         'working entity': working_entity,
                     }
                 elif what == 'count-translate':
-                    tw += count_transenti(token,args,data)
+                    tw += count_transenti(token,args)
                 tn += 1
     print(tw)
     return paragraphs
@@ -249,14 +229,14 @@ def main():
         ## --email: optional and used for translation provider MyMemory
         ##          cf. https://translate-python.readthedocs.io/en/latest/providers.html
         ##              https://mymemory.translated.net/doc/usagelimits.php
-        paragraphs = process_text(args,data)
-        paragraphs = get_sentences(paragraphs,args,data)
-        paragraphs = process_tokens(paragraphs,"process",args,data)
+        paragraphs = process_text(args)
+        paragraphs = get_sentences(paragraphs,args)
+        paragraphs = process_tokens(paragraphs,"process",args)
     elif args['command'] == 'count-translate':
         # python sentimens.py --command count-translate --input input/file
         # python sentimens.py --command count-translate --input-text "input text"
-        paragraphs = process_text(args,data)
-        paragraphs = get_sentences(paragraphs,args,data)
-        paragraphs = process_tokens(paragraphs,"count-translate",args,data)
+        paragraphs = process_text(args)
+        paragraphs = get_sentences(paragraphs,args)
+        paragraphs = process_tokens(paragraphs,"count-translate",args)
 if __name__ == "__main__":
     main()
