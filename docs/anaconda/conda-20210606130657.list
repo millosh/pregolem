@@ -1,0 +1,58 @@
+# packages in environment at /home/millosh/anaconda3/envs/sentiments:
+#
+# Name                    Version                   Build  Channel
+_libgcc_mutex             0.1                        main  
+beautifulsoup4            4.9.3                    pypi_0    pypi
+blis                      0.7.4                    pypi_0    pypi
+ca-certificates           2021.5.25            h06a4308_1  
+catalogue                 1.0.0                    pypi_0    pypi
+certifi                   2021.5.30        py39h06a4308_0  
+chardet                   3.0.4                    pypi_0    pypi
+cymem                     2.0.5                    pypi_0    pypi
+en                        0.0.1                    pypi_0    pypi
+en-core-web-lg            2.3.1                    pypi_0    pypi
+google                    3.0.0                    pypi_0    pypi
+googletrans               3.0.0                    pypi_0    pypi
+h11                       0.9.0                    pypi_0    pypi
+h2                        3.2.0                    pypi_0    pypi
+hpack                     3.0.0                    pypi_0    pypi
+hstspreload               2020.12.22               pypi_0    pypi
+httpcore                  0.9.1                    pypi_0    pypi
+httpx                     0.13.3                   pypi_0    pypi
+hyperframe                5.2.0                    pypi_0    pypi
+idna                      2.10                     pypi_0    pypi
+ld_impl_linux-64          2.33.1               h53a641e_7  
+libffi                    3.3                  he6710b0_2  
+libgcc-ng                 9.1.0                hdf63c60_0  
+libstdcxx-ng              9.1.0                hdf63c60_0  
+murmurhash                1.0.5                    pypi_0    pypi
+ncurses                   6.2                  he6710b0_1  
+nltk                      3.3                      pypi_0    pypi
+numpy                     1.20.3                   pypi_0    pypi
+openssl                   1.1.1k               h27cfd23_0  
+pip                       21.1.2                   pypi_0    pypi
+plac                      1.1.3                    pypi_0    pypi
+preshed                   3.0.5                    pypi_0    pypi
+python                    3.9.5                hdb3f193_3  
+readline                  8.1                  h27cfd23_0  
+requests                  2.25.1                   pypi_0    pypi
+rfc3986                   1.5.0                    pypi_0    pypi
+setuptools                52.0.0           py39h06a4308_0  
+six                       1.16.0                   pypi_0    pypi
+sniffio                   1.2.0                    pypi_0    pypi
+soupsieve                 2.2.1                    pypi_0    pypi
+spacy                     2.3.7                    pypi_0    pypi
+spacy-udpipe              0.3.2                    pypi_0    pypi
+spacy-wordnet             0.0.4                    pypi_0    pypi
+sqlite                    3.35.4               hdfb4753_0  
+srsly                     1.0.5                    pypi_0    pypi
+thinc                     7.4.5                    pypi_0    pypi
+tk                        8.6.10               hbc83047_0  
+tqdm                      4.61.0                   pypi_0    pypi
+tzdata                    2020f                h52ac0ba_0  
+ufal-udpipe               1.2.0.3                  pypi_0    pypi
+urllib3                   1.26.5                   pypi_0    pypi
+wasabi                    0.8.2                    pypi_0    pypi
+wheel                     0.36.2             pyhd3eb1b0_0  
+xz                        5.2.5                h7b6447c_0  
+zlib                      1.2.11               h7b6447c_3  
