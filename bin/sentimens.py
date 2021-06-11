@@ -259,6 +259,7 @@ def get_translations(paragraphs,args):
                         token = paragraphs[pkey]['sentences'][skey]['doc'][tkey]
                         working_entity = paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity']
                         if working_entity['relevant']:
+                            print(pkey,skey,tkey)
                             working_entity = get_transenti(token,working_entity,args)
                 except IndexError:
                     pass
