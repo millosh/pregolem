@@ -109,11 +109,6 @@ def add_word(language,lemma,pos,args):
     }
     return word
 
-def stopwords_delete(word_list):
-    from nltk.corpus import stopwords
-    filtered_words=[]
-    return(word_list)
-
 def add_synset(language,lemma,pos,args):
     working_word = add_word(language,lemma,pos,args)
     wordnet_token = args['nlp-working'](lemma)[0]
