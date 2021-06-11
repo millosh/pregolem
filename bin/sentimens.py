@@ -224,7 +224,7 @@ def create_structure(paragraphs,what,args):
 def get_transenti(token,working_entity,args):
     #try:
     translation = args['translator'].translate(token.lemma_)
-    print(translation)
+    print(token.lemma_, ':::', translation)
     working_entity['primary translation'] = translation
     nwords = len(translation.split(" "))
     wdoc = args['nlp-working'](translation)
@@ -276,8 +276,8 @@ def main():
     # 3. Get sentiments
     # 4. Import translations and sentiments
     if args['command'] == 'create-structure':
-        # python sentimens.py --command create-structure --input input/file --output-pickle output.pickle --input-language <ISO 639-1 code>
-        # python sentimens.py --command create-structure --input-text "input text" --output-pickle output.pickle --input-language <ISO 639-1 code>
+        # python sentimens.py --command create-structure --input input/file --output-pickle structure.pickle --input-language <ISO 639-1 code>
+        # python sentimens.py --command create-structure --input-text "input text" --output-pickle structure.pickle --input-language <ISO 639-1 code>
         ## --email: optional and used for translation provider MyMemory
         ##          cf. https://translate-python.readthedocs.io/en/latest/providers.html
         ##              https://mymemory.translated.net/doc/usagelimits.php
@@ -286,8 +286,8 @@ def main():
         paragraphs = create_structure(paragraphs,"create-structure",args)
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     elif args['command'] == 'get-translations':
-        # python sentimens.py --command get-translations --email your@email --input-pickle input.pickle --output-pickle output.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
-        # python sentimens.py --command get-translations --email your@email --input-pickle input.pickle --output-pickle output.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
+        # python sentimens.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
+        # python sentimens.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs = get_translations(paragraphs,args)
     elif args['command'] == 'count-translate':
