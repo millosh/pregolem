@@ -240,7 +240,8 @@ def get_translation(token,working_entity,args):
 def get_sentiment(token,working_entity,args):
     translation = working_entity['primary translation']
     doc = args['nlp-working'].from_bytes(working_entity['working doc'])
-    print(doc[0])
+    print(type(doc))
+    print(dir(doc))
     
 def update_paragraphs(ucmd,paragraphs,args):
     plist = list(paragraphs.keys())
