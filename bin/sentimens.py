@@ -62,6 +62,7 @@ def get_args():
     elif 'input-text' not in args:
         args['input-text'] = "Pregolem je previše velik!"
     args = get_arg('--input-language',args)
+    args = get_arg('--input-pickle',args)
     args = get_arg('--output-pickle',args)
     if 'input-language' not in args:
         args['input-language'] = 'sr'
@@ -175,12 +176,14 @@ def count_transenti(token,args):
         tw = 0
     return tw
 
-def get_transenti(token,args):
+
+def set_working_entity(token,args):
     working_entity = {
         'positivity score': None, # construct score!
         'negativity score': None, # construct score!
         'objectivity score': None, # construct score!
         'working lemma': None, # construct phrase!
+        'relevant': False,
         'children': [],
         'working doc': [],
         'working words': [],
@@ -188,23 +191,10 @@ def get_transenti(token,args):
     for child in token.subtree:
         working_entity['children'].append(child.i)
     if token.pos_ in args['relevant parts of speech']:
-        print(token.lemma_)
-        try:
-            translation = args['translator'].translate(token.lemma_)
-            working_entity['primary translation'] = translation
-            nwords = len(translation.split(" "))
-            wdoc = args['nlp-working'](translation)
-            wbytes = args['nlp-working'].to_bytes()
-            working_entity['working doc'] = wbytes
-            for wtoken in wdoc:
-                working_word = add_synset(args['working-language'],wtoken.lemma_,wtoken.pos_,args)
-                # TODO: token._.wordnet.wordnet_domains()
-                working_entity['working words'].append(working_word)
-        except RuntimeError:
-            pass
+        working_entity['relevant'] = True
     return working_entity
 
-def process_tokens(paragraphs,what,args):
+def create_structure(paragraphs,what,args):
     tw = 0
     pmin = 0
     pmax = len(list(paragraphs.keys()))
@@ -217,13 +207,11 @@ def process_tokens(paragraphs,what,args):
             doc = paragraphs[pkey]['sentences'][skey]['doc']
             tn = 0
             for token in doc:
-                if what == 'process':
-                    working_entity = get_transenti(token,args)
+                if what == 'create-structure':
                     print(pkey, ":::", skey, ":::", tn, ":::", token.text, ":::",)
+                    working_entity = set_working_entity(token,args)
                     paragraphs[pkey]['sentences'][skey]['tokens'][tn] = {
                         'text': str(token.text),
-                        #'token': token, # token can't be pickled
-                                         # implicitly named by the list item number
                         'working entity': working_entity,
                     }
                 elif what == 'count-translate':
@@ -233,18 +221,75 @@ def process_tokens(paragraphs,what,args):
         print(tw)
     return paragraphs
 
+def get_transenti(token,working_entity,args):
+    #try:
+    translation = args['translator'].translate(token.lemma_)
+    print(translation)
+    working_entity['primary translation'] = translation
+    nwords = len(translation.split(" "))
+    wdoc = args['nlp-working'](translation)
+    wbytes = args['nlp-working'].to_bytes()
+    working_entity['working doc'] = wbytes
+    #for wtoken in wdoc:
+    #    working_word = add_synset(args['working-language'],wtoken.lemma_,wtoken.pos_,args)
+    #    # TODO: token._.wordnet.wordnet_domains()
+    #    working_entity['working words'].append(working_word)
+    #except RuntimeError:
+    #    pass
+    return working_entity
+
+def get_translations(paragraphs,args):
+    plist = list(paragraphs.keys())
+    pmin = min(plist)
+    pmax = max(plist)
+    for p in range(pmin,pmax):
+        try:
+            pkey = plist[p]
+            slist = list(paragraphs[pkey]['sentences'].keys())
+            smin = min(slist)
+            smax = max(slist)
+            for s in range(smin,smax):
+                try:
+                    skey = slist[s]
+                    tlist = list(paragraphs[pkey]['sentences'][s]['tokens'].keys())
+                    tmin = min(tlist)
+                    tmax = max(tlist)
+                    for t in range(tmin,tmax):
+                        tkey = tlist[t]
+                        token = paragraphs[pkey]['sentences'][skey]['doc'][tkey]
+                        working_entity = paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity']
+                        if working_entity['relevant']:
+                            working_entity = get_transenti(token,working_entity,args)
+                except IndexError:
+                    pass
+        except IndexError:
+            pass
+
+def add_transenti(paragraphs,args):
+    working_entity = get_transenti(token,args)
+    paragraphs[pkey]['sentences'][skey]['tokens'][tn]['working entity'] = working_entity
+
 def main():
     args = get_args()
-    if args['command'] == 'process':
-        # python sentimens.py --email your@email --command process --input input/file --output-pickle output.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
-        # python sentimens.py --email your@email --command process --input-text "input text" --output-pickle output.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
+    # 1. Create structure
+    # 2. Get translations
+    # 3. Get sentiments
+    # 4. Import translations and sentiments
+    if args['command'] == 'create-structure':
+        # python sentimens.py --command create-structure --input input/file --output-pickle output.pickle --input-language <ISO 639-1 code>
+        # python sentimens.py --command create-structure --input-text "input text" --output-pickle output.pickle --input-language <ISO 639-1 code>
         ## --email: optional and used for translation provider MyMemory
         ##          cf. https://translate-python.readthedocs.io/en/latest/providers.html
         ##              https://mymemory.translated.net/doc/usagelimits.php
         paragraphs = process_text(args)
         paragraphs = get_sentences(paragraphs,args)
-        paragraphs = process_tokens(paragraphs,"process",args)
+        paragraphs = create_structure(paragraphs,"create-structure",args)
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
+    elif args['command'] == 'get-translations':
+        # python sentimens.py --command get-translations --email your@email --input-pickle input.pickle --output-pickle output.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
+        # python sentimens.py --command get-translations --email your@email --input-pickle input.pickle --output-pickle output.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
+        paragraphs = pickle.load(open(args['input-pickle'],'rb'))
+        paragraphs = get_translations(paragraphs,args)
     elif args['command'] == 'count-translate':
         # python sentimens.py --command count-translate --input input/file --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         # python sentimens.py --command count-translate --input-text "input text" --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
