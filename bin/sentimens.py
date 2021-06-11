@@ -291,6 +291,7 @@ def main():
         # python sentimens.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs = get_translations(paragraphs,args)
+        pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     elif args['command'] == 'count-translate':
         # python sentimens.py --command count-translate --input input/file --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         # python sentimens.py --command count-translate --input-text "input text" --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
