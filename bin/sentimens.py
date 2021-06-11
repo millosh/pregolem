@@ -221,12 +221,11 @@ def create_structure(paragraphs,what,args):
         print(tw)
     return paragraphs
 
-def get_transenti(token,working_entity,args):
+def get_translation(token,working_entity,args):
     #try:
     translation = args['translator'].translate(token.lemma_)
     print(token.lemma_, ':::', translation)
     working_entity['primary translation'] = translation
-    nwords = len(translation.split(" "))
     wdoc = args['nlp-working'](translation)
     wbytes = args['nlp-working'].to_bytes()
     working_entity['working doc'] = wbytes
@@ -238,7 +237,12 @@ def get_transenti(token,working_entity,args):
     #    pass
     return working_entity
 
-def get_translations(paragraphs,args):
+def get_sentiment(token,working_entity,args):
+    translation = working_entity['primary translation']
+    doc = args['nlp-working'].from_bytes(working_entity['working doc'])
+    print(doc[0])
+    
+def update_paragraphs(ucmd,paragraphs,args):
     plist = list(paragraphs.keys())
     pmin = min(plist)
     pmax = max(plist)
@@ -260,7 +264,10 @@ def get_translations(paragraphs,args):
                         working_entity = paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity']
                         if working_entity['relevant']:
                             print(pkey,skey,tkey)
-                            working_entity = get_transenti(token,working_entity,args)
+                            if ucmd == "get translations":
+                                working_entity = get_translation(token,working_entity,args)
+                            if ucmd == "get sentiments":
+                                working_entity = get_sentiment(token,working_entity,args)
                             paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity'] = working_entity
                 except IndexError:
                     pass
@@ -268,9 +275,7 @@ def get_translations(paragraphs,args):
             pass
     return paragraphs
 
-def add_transenti(paragraphs,args):
-    working_entity = get_transenti(token,args)
-    paragraphs[pkey]['sentences'][skey]['tokens'][tn]['working entity'] = working_entity
+def get_sentiments(paragraphs,args):
 
 def main():
     args = get_args()
@@ -292,7 +297,13 @@ def main():
         # python sentimens.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         # python sentimens.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
-        paragraphs = get_translations(paragraphs,args)
+        paragraphs = update_paragraphs("get translations",paragraphs,args)
+        pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
+    elif args['command'] == 'get-sentiments':
+        # python sentimens.py --command get-sentiments --email your@email --input-pickle translated.pickle --output-pickle sentiments.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
+        # python sentimens.py --command get-translations --email your@email --input-pickle translated.pickle --output-pickle sentiments.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
+        paragraphs = pickle.load(open(args['input-pickle'],'rb'))
+        paragraphs = update_paragraphs("get sentiments",paragraphs,args)
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     elif args['command'] == 'count-translate':
         # python sentimens.py --command count-translate --input input/file --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
