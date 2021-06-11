@@ -275,8 +275,6 @@ def update_paragraphs(ucmd,paragraphs,args):
             pass
     return paragraphs
 
-def get_sentiments(paragraphs,args):
-
 def main():
     args = get_args()
     # 1. Create structure
