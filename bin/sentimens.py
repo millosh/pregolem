@@ -1,4 +1,4 @@
-import spacy_udpipe, spacy_wordnet, spacy, nltk, re, sys, time, os
+import spacy_udpipe, spacy_wordnet, spacy, nltk, re, time, pickle, sys, os
 from nltk.corpus import wordnet as wn
 from nltk.corpus import sentiwordnet as swn
 from spacy_wordnet.wordnet_annotator import WordnetAnnotator
@@ -34,6 +34,21 @@ def get_args():
     # timestamps
     args['start time'] = time.strftime("%Y-%m-%d %H:%M:%S")
     default_timestamp = '2020-08-24 12:00'
+    
+    # directories
+    if 'root-dir' not in args:
+        args['root-dir'] = "."
+    #if not exists(args['root-dir']):
+    #    os.mkdir(args['root-dir'])
+    args = get_arg('--error-file',args)
+    if 'error-file' not in args:
+        args['error-file'] = args['root-dir'] + '/errors.log'
+    args = get_arg('--data-dir',args)
+    if 'data-dir' not in args:
+        args['data-dir'] = args['root-dir'] + "/data"
+    #if not exists(args['data-dir']):
+    #    os.mkdir(args['data-dir'])
+    
     # general
     args = get_arg('--command',args)
     ## --email: optional and used for translation provider MyMemory
@@ -47,6 +62,7 @@ def get_args():
     elif 'input-text' not in args:
         args['input-text'] = "Pregolem je previše velik!"
     args = get_arg('--input-language',args)
+    args = get_arg('--output-pickle',args)
     if 'input-language' not in args:
         args['input-language'] = 'sr'
     args = get_arg('--working-language',args)
@@ -57,69 +73,68 @@ def get_args():
     ##       - spacy_udpipie
     ##       - translate module
     ##       - spacy/nltk interface to wordnet
+    
     # download models
     spacy_udpipe.download(args['input-language'])
     spacy_udpipe.download(args['working-language'])
     nltk.download('wordnet')
     nltk.download('sentiwordnet')
+    
     # pointers
     args['nlp-input'] = spacy_udpipe.load(args['input-language'])
-    #args['nlp-working'] = spacy_udpipe.load(args['working-language'])
-    args['nlp-working'] = spacy.load("en")
+    ## for working language -- i.e. English -- main spacy model is more useful
+    args['nlp-working'] = spacy.load(args['working-language'])
     args['nlp-working'].add_pipe(WordnetAnnotator(args['nlp-working'].lang), after='tagger')
-    #args['translator'] = Translator()
+    #args['nlp-working'] = spacy_udpipe.load(args['working-language'])
+    ## Google Translate is not reliable, we are using MyMemory
+    ##    through the translate module
     if 'email' in args:
         args['translator'] = Translator(from_lang=args['input-language'],to_lang=args['working-language'],email=args['email'])
     else:
         args['translator'] = Translator(from_lang=args['input-language'],to_lang=args['working-language'])
-    # meta translation
-    args['relevant parts of speech'] = {
-        'NOUN': 'n',
-        'VERB': 'v',
-        'ADJ': 'a',
-        'ADV': 'r',
-    }
-    #
-    if 'root-dir' not in args:
-        args['root-dir'] = "."
-    #if not exists(args['root-dir']):
-    #    os.mkdir(args['root-dir'])
-    args = get_arg('--error-file',args)
-    if 'error-file' not in args:
-        args['error-file'] = args['root-dir'] + '/errors.log'
-    args = get_arg('--data-dir',args)
-    if 'data-dir' not in args:
-        args['data-dir'] = args['root-dir'] + "/data"
-    #if not exists(args['data-dir']):
-    #    os.mkdir(args['data-dir'])
+    #args['translator'] = Translator()
+    
+    # relevant parts of speech
+    args['relevant parts of speech'] = [
+        'NOUN', 'VERB', 'ADJ', 'ADV',
+    ]
+
     return args
 
-def add_word(language,token,lemma,pos,args):
+def add_word(language,lemma,pos,args):
     word = {
         'language': language,
-        'token': token,
         'lemma': lemma,
         'pos': pos,
     }
     return word
 
+def stopwords_delete(word_list):
+    from nltk.corpus import stopwords
+    filtered_words=[]
+    return(word_list)
+
 def add_synset(language,lemma,pos,args):
-    working_token = add_word(language,None,lemma,pos,args)
+    working_word = add_word(language,lemma,pos,args)
     wordnet_token = args['nlp-working'](lemma)[0]
-    working_token['wordnet token'] = wordnet_token
     try:
         # Getting WordNet part of speech not so nice as I want to avoid
         #   creating a dictionary :/
         wordnet_pos = str(wordnet_token._.wordnet.lemmas()[0]).split(".")[1]
         synset = lemma + "." + wordnet_pos + ".01"
-        working_token['wordnet enetity'] = synset
+        working_word['wordnet enetity'] = synset
         try:
-            working_token['sentiment token'] = swn.senti_synset(synset)
+            sn = swn.senti_synset(synset)
+            working_word['sentiments'] = {
+                'negativity score': sn.neg_score(),
+                'positivity score': sn.pos_score(),
+                'objectivity score': sn.obj_score(),
+            }
         except nltk.corpus.reader.wordnet.WordNetError:
-            working_token['sentiment token'] = None
+            working_word['sentiments'] = None
     except IndexError:
-        working_token['sentiment token'] = None
-    return working_token
+        working_word['sentiments'] = None
+    return working_word
 
 def process_text(args):
     paragraphs = {}
@@ -167,31 +182,31 @@ def count_transenti(token,args):
 
 def get_transenti(token,args):
     working_entity = {
-        'positivity score': None,
-        'negativity score': None,
-        'objectivity score': None,
-        'working lemma': None,
+        'positivity score': None, # construct score!
+        'negativity score': None, # construct score!
+        'objectivity score': None, # construct score!
+        'working lemma': None, # construct phrase!
         'children': [],
-        'working tokens': [],
+        'working doc': [],
+        'working words': [],
     }
     for child in token.subtree:
-        working_entity['children'].append(child)
+        working_entity['children'].append(child.i)
     if token.pos_ in args['relevant parts of speech']:
-        translation = args['translator'].translate(token.lemma_)
-        print(token.lemma_,translation,args['input-language'],args['working-language'])
-        working_entity['primary translation'] = translation
-        nwords = len(translation.split(" "))
-        if nwords == 1:
-            working_lemma = translation
-            working_token = add_synset(args['working-language'],working_lemma,token.pos_,args)
-            # TODO: token._.wordnet.wordnet_domains()
-            working_entity['working tokens'].append(working_token)
-        else:
+        print(token.lemma_)
+        try:
+            translation = args['translator'].translate(token.lemma_)
+            working_entity['primary translation'] = translation
+            nwords = len(translation.split(" "))
             wdoc = args['nlp-working'](translation)
-            working_entity['sentiment words'] = []
+            wbytes = args['nlp-working'].to_bytes()
+            working_entity['working doc'] = wbytes
             for wtoken in wdoc:
-                working_token = add_synset(args['working-language'],wtoken.lemma_,wtoken.pos_,args)
-                working_entity['working tokens'].append(working_token)
+                working_word = add_synset(args['working-language'],wtoken.lemma_,wtoken.pos_,args)
+                # TODO: token._.wordnet.wordnet_domains()
+                working_entity['working words'].append(working_word)
+        except RuntimeError:
+            pass
     return working_entity
 
 def process_tokens(paragraphs,what,args):
@@ -212,7 +227,8 @@ def process_tokens(paragraphs,what,args):
                     print(pkey, ":::", skey, ":::", tn, ":::", token.text, ":::",)
                     paragraphs[pkey]['sentences'][skey]['tokens'][tn] = {
                         'text': str(token.text),
-                        'token': token,
+                        #'token': token, # token can't be pickled
+                                         # implicitly named by the list item number
                         'working entity': working_entity,
                     }
                 elif what == 'count-translate':
@@ -223,19 +239,20 @@ def process_tokens(paragraphs,what,args):
     return paragraphs
 
 def main():
-    args, data = get_args()
+    args = get_args()
     if args['command'] == 'process':
-        # python sentimens.py --email your@email --command process --input input/file
-        # python sentimens.py --email your@email --command process --input-text "input text"
+        # python sentimens.py --email your@email --command process --input input/file --output-pickle output.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
+        # python sentimens.py --email your@email --command process --input-text "input text" --output-pickle output.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         ## --email: optional and used for translation provider MyMemory
         ##          cf. https://translate-python.readthedocs.io/en/latest/providers.html
         ##              https://mymemory.translated.net/doc/usagelimits.php
         paragraphs = process_text(args)
         paragraphs = get_sentences(paragraphs,args)
         paragraphs = process_tokens(paragraphs,"process",args)
+        pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     elif args['command'] == 'count-translate':
-        # python sentimens.py --command count-translate --input input/file
-        # python sentimens.py --command count-translate --input-text "input text"
+        # python sentimens.py --command count-translate --input input/file --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
+        # python sentimens.py --command count-translate --input-text "input text" --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         paragraphs = process_text(args)
         paragraphs = get_sentences(paragraphs,args)
         paragraphs = process_tokens(paragraphs,"count-translate",args)
