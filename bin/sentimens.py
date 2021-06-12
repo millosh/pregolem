@@ -142,7 +142,6 @@ def process_text(args):
         if par != '':
             paragraphs[p] = {
                 'text': par,
-                'doc': args['nlp-input'](par),
                 'sentences': {},
             }
     return paragraphs
@@ -161,7 +160,7 @@ def get_sentences(paragraphs,args):
                 sdoc = args['nlp-input'](sentence)
                 paragraphs[pkey]['sentences'][sn] = {
                     'text': sentence,
-                    'doc': sdoc,
+                    #'doc': sdoc,
                     'tokens': {},
                 }
                 sn += 1
@@ -204,7 +203,7 @@ def create_structure(paragraphs,what,args):
         smax = len(list(paragraphs[pkey]['sentences'].keys()))
         for s in range(smin,smax):
             skey = list(paragraphs[pkey]['sentences'].keys())[s]
-            doc = paragraphs[pkey]['sentences'][skey]['doc']
+            doc = args['nlp-input'](paragraphs[pkey]['sentences'][skey]['text'])
             tn = 0
             for token in doc:
                 if what == 'create-structure':
@@ -222,19 +221,13 @@ def create_structure(paragraphs,what,args):
     return paragraphs
 
 def get_translation(token,working_entity,args):
-    #try:
     translation = args['translator'].translate(token.lemma_)
     print(token.lemma_, ':::', translation)
     working_entity['primary translation'] = translation
-    wdoc = args['nlp-working'](translation)
-    wbytes = args['nlp-working'].to_bytes()
-    working_entity['working doc'] = wbytes
     #for wtoken in wdoc:
     #    working_word = add_synset(args['working-language'],wtoken.lemma_,wtoken.pos_,args)
     #    # TODO: token._.wordnet.wordnet_domains()
     #    working_entity['working words'].append(working_word)
-    #except RuntimeError:
-    #    pass
     return working_entity
 
 def get_sentiment(token,working_entity,args):
