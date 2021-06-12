@@ -247,12 +247,13 @@ def update_paragraphs(ucmd,paragraphs,args):
             for s in range(smin,smax):
                 try:
                     skey = slist[s]
-                    tlist = list(paragraphs[pkey]['sentences'][s]['tokens'].keys())
+                    doc = args['nlp-input'](paragraphs[pkey]['sentences'][skey]['text'])
+                    tlist = list(paragraphs[pkey]['sentences'][skey]['tokens'].keys())
                     tmin = min(tlist)
                     tmax = max(tlist)
                     for t in range(tmin,tmax):
                         tkey = tlist[t]
-                        token = paragraphs[pkey]['sentences'][skey]['doc'][tkey]
+                        token = doc[tkey]
                         working_entity = paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity']
                         if working_entity['relevant']:
                             print(pkey,skey,tkey)
