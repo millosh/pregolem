@@ -31,6 +31,7 @@ def get_arg(arg,args):
 
 def get_args():
     args = {}
+    data = {}
     # timestamps
     args['start time'] = time.strftime("%Y-%m-%d %H:%M:%S")
     default_timestamp = '2020-08-24 12:00'
@@ -100,7 +101,7 @@ def get_args():
         'NOUN', 'VERB', 'ADJ', 'ADV',
     ]
 
-    return args
+    return args, data
 
 def add_word(language,lemma,pos,args):
     word = {
@@ -113,6 +114,7 @@ def add_word(language,lemma,pos,args):
 def add_synset(language,lemma,pos,args):
     working_word = add_word(language,lemma,pos,args)
     wordnet_token = args['nlp-working'](lemma)[0]
+    working_word['wordnet domain'] = wordnet_token._.wordnet.wordnet_domains()
     try:
         # Getting WordNet part of speech not so nice as I want to avoid
         #   creating a dictionary :/
@@ -190,7 +192,7 @@ def set_working_entity(token,args):
         working_entity['relevant'] = True
     return working_entity
 
-def create_structure(paragraphs,what,args):
+def create_structure(paragraphs,args):
     tw = 0
     pmin = 0
     pmax = len(list(paragraphs.keys()))
@@ -203,18 +205,13 @@ def create_structure(paragraphs,what,args):
             doc = args['nlp-input'](paragraphs[pkey]['sentences'][skey]['text'])
             tn = 0
             for token in doc:
-                if what == 'create-structure':
-                    print(pkey, ":::", skey, ":::", tn, ":::", token.text, ":::",)
-                    working_entity = set_working_entity(token,args)
-                    paragraphs[pkey]['sentences'][skey]['tokens'][tn] = {
-                        'text': str(token.text),
-                        'working entity': working_entity,
-                    }
-                elif what == 'count-translate':
-                    tw += count_transenti(token,args)
+                print(pkey, ":::", skey, ":::", tn, ":::", token.text, ":::",)
+                working_entity = set_working_entity(token,args)
+                paragraphs[pkey]['sentences'][skey]['tokens'][tn] = {
+                    'text': str(token.text),
+                    'working entity': working_entity,
+                }
                 tn += 1
-    if what == 'count-translate':
-        print(tw)
     return paragraphs
 
 def get_translation(token,working_entity,args):
@@ -228,11 +225,10 @@ def get_sentiment(token,working_entity,args):
     working_doc = args['nlp-working'](working_entity['primary translation'])
     for working_token in working_doc:
         working_word = add_synset(args['working-language'],working_token.lemma_,working_token.pos_,args)
-        # TODO: token._.wordnet.wordnet_domains()
         working_entity['working words'].append(working_word)
     return working_entity
     
-def update_paragraphs(ucmd,paragraphs,args):
+def update_paragraphs(paragraphs,args,data):
     plist = list(paragraphs.keys())
     pmin = min(plist)
     pmax = max(plist)
@@ -255,23 +251,23 @@ def update_paragraphs(ucmd,paragraphs,args):
                         working_entity = paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity']
                         if working_entity['relevant']:
                             print(pkey,skey,tkey)
-                            if ucmd == "get translations":
+                            if args['command'] == "get-translations":
                                 working_entity = get_translation(token,working_entity,args)
-                            if ucmd == "get sentiments":
+                            if args['command'] == "get-sentiments":
                                 working_entity = get_sentiment(token,working_entity,args)
                             paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity'] = working_entity
                 except IndexError:
                     pass
         except IndexError:
             pass
-    return paragraphs
+    return paragraphs, data
 
 def main():
-    args = get_args()
+    args, data = get_args()
     # 1. Create structure
     # 2. Get translations
     # 3. Get sentiments
-    # 4. Import translations and sentiments
+    # 4. Make wordnet domains
     if args['command'] == 'create-structure':
         # python sentimens.py --command create-structure --input input/file --output-pickle structure.pickle --input-language <ISO 639-1 code>
         # python sentimens.py --command create-structure --input-text "input text" --output-pickle structure.pickle --input-language <ISO 639-1 code>
@@ -280,26 +276,22 @@ def main():
         ##              https://mymemory.translated.net/doc/usagelimits.php
         paragraphs = process_text(args)
         paragraphs = get_sentences(paragraphs,args)
-        paragraphs = create_structure(paragraphs,"create-structure",args)
+        paragraphs = create_structure(paragraphs,args)
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     elif args['command'] == 'get-translations':
         # python sentimens.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         # python sentimens.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
-        paragraphs = update_paragraphs("get translations",paragraphs,args)
+        paragraphs, data = update_paragraphs(paragraphs,args,data)
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     elif args['command'] == 'get-sentiments':
-        # python sentimens.py --command get-sentiments --email your@email --input-pickle translated.pickle --output-pickle sentiments.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
-        # python sentimens.py --command get-translations --email your@email --input-pickle translated.pickle --output-pickle sentiments.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
+        # python sentimens.py --command get-sentiments --input-pickle translated.pickle --output-pickle sentiments.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
+        # python sentimens.py --command get-translations --input-pickle translated.pickle --output-pickle sentiments.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
-        paragraphs = update_paragraphs("get sentiments",paragraphs,args)
+        paragraphs, data = update_paragraphs(paragraphs,args,data)
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
-    elif args['command'] == 'count-translate':
-        # python sentimens.py --command count-translate --input input/file --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
-        # python sentimens.py --command count-translate --input-text "input text" --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
-        paragraphs = process_text(args)
-        paragraphs = get_sentences(paragraphs,args)
-        paragraphs = process_tokens(paragraphs,"count-translate",args)
-
+    elif args['command'] == 'make-domains':
+        paragraphs = pickle.load(open(args['input-pickle'],'rb'))
+        paragraphs, data = update_paragraphs(paragraphs,args,data)
 if __name__ == "__main__":
     main()
