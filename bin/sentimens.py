@@ -152,15 +152,13 @@ def get_sentences(paragraphs,args):
     prev = ''
     for p in range(pmin,pmax):
         pkey = list(paragraphs.keys())[p]
-        doc = paragraphs[pkey]['doc']
+        doc = args['nlp-input'](paragraphs[pkey]['text'])
         sn = 0
         for token in doc:
             if token.is_sent_start:
                 sentence = str(token.sent)
-                sdoc = args['nlp-input'](sentence)
                 paragraphs[pkey]['sentences'][sn] = {
                     'text': sentence,
-                    #'doc': sdoc,
                     'tokens': {},
                 }
                 sn += 1
