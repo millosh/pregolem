@@ -179,7 +179,6 @@ def set_working_entity(token,args):
         'positivity score': None, # construct score!
         'negativity score': None, # construct score!
         'objectivity score': None, # construct score!
-        'working lemma': None, # construct phrase!
         'relevant': False,
         'children': [],
         'working doc': [],
@@ -222,17 +221,16 @@ def get_translation(token,working_entity,args):
     translation = args['translator'].translate(token.lemma_)
     print(token.lemma_, ':::', translation)
     working_entity['primary translation'] = translation
-    #for wtoken in wdoc:
-    #    working_word = add_synset(args['working-language'],wtoken.lemma_,wtoken.pos_,args)
-    #    # TODO: token._.wordnet.wordnet_domains()
-    #    working_entity['working words'].append(working_word)
     return working_entity
 
 def get_sentiment(token,working_entity,args):
     translation = working_entity['primary translation']
-    doc = args['nlp-working'].from_bytes(working_entity['working doc'])
-    print(type(doc))
-    print(dir(doc))
+    working_doc = args['nlp-working'](working_entity['primary translation'])
+    for working_token in working_doc:
+        working_word = add_synset(args['working-language'],working_token.lemma_,working_token.pos_,args)
+        # TODO: token._.wordnet.wordnet_domains()
+        working_entity['working words'].append(working_word)
+    return working_entity
     
 def update_paragraphs(ucmd,paragraphs,args):
     plist = list(paragraphs.keys())
