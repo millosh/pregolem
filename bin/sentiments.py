@@ -232,11 +232,12 @@ def create_structure(paragraphs,args):
     return paragraphs
 
 def get_translation(token,working_entity,nrel,args):
-    if token.lemma_ in args['dict']:
-        translation = args['dict'][token.lemma_]
-    else:
-        translation = args['translator'].translate(token.lemma_)
-        args['dict'][token.lemma_] = translation
+    translation = ''
+    #if token.lemma_ in args['dict']:
+    #    translation = args['dict'][token.lemma_]
+    #else:
+    #    translation = args['translator'].translate(token.lemma_)
+    #    args['dict'][token.lemma_] = translation
     print("nrel=" + str(nrel), '::: ntrans=' + str(len(list(args['dict'].keys()))), ':::', token.lemma_, ':::', translation)
     working_entity['primary translation'] = translation
     return working_entity, args
