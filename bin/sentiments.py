@@ -232,12 +232,12 @@ def create_structure(paragraphs,args):
     return paragraphs
 
 def get_translation(token,working_entity,nrel,args):
-    translation = ''
-    #if token.lemma_ in args['dict']:
-    #    translation = args['dict'][token.lemma_]
-    #else:
-    #    translation = args['translator'].translate(token.lemma_)
-    #    args['dict'][token.lemma_] = translation
+    #translation = ''
+    if token.lemma_ in args['dict']:
+        translation = args['dict'][token.lemma_]
+    else:
+        translation = args['translator'].translate(token.lemma_)
+        args['dict'][token.lemma_] = translation
     print("nrel=" + str(nrel), '::: ntrans=' + str(len(list(args['dict'].keys()))), ':::', token.lemma_, ':::', translation)
     working_entity['primary translation'] = translation
     return working_entity, args
@@ -306,70 +306,73 @@ def update_paragraphs(paragraphs,args,data):
     pmax = max(plist)
     nrel = 0
     for p in range(pmin,pmax):
-        pkey = plist[p]
-        data['paragraphs'][pkey] = {
-            'domains': {},
-            'sentences': {},
-        }
-        slist = list(paragraphs[pkey]['sentences'].keys())
-        smin = 0
-        smax = max(slist)
-        for s in range(smin,smax):
-            skey = slist[s]
-            data['paragraphs'][pkey]['sentences'][skey] = {
+        try:
+            pkey = plist[p]
+            data['paragraphs'][pkey] = {
                 'domains': {},
-                'tokens': {},
+                'sentences': {},
             }
-            doc = args['nlp-input'](paragraphs[pkey]['sentences'][skey]['text'])
-            tlist = list(paragraphs[pkey]['sentences'][skey]['tokens'].keys())
-            tmin = 0
-            tmax = max(tlist)
-            for t in range(tmin,tmax):
-                tkey = tlist[t]
-                token = doc[tkey]
-                working_entity = paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity']
-                if working_entity['relevant']:
-                    #print(pkey,skey,tkey)
-                    nrel += 1
-                    if args['command'] == "get-translations":
-                        working_entity, args = get_translation(token,working_entity,nrel,args)
-                    elif args['command'] == "get-sentiments":
-                        working_entity = get_sentiment(token,working_entity,args)
-                    elif args['command'] == "make-domains":
-                        if pkey not in data['paragraphs']:
-                            data['paragraphs'][pkey] = {
-                                'domains': {},
-                                'sentences': {},
-                            }
-                        if skey not in data['paragraphs'][pkey]['sentences']:
-                            data['paragraphs'][pkey]['sentences'][skey] = {
-                                'domains': {},
-                                'tokens': {},
-                            }
-                        if tkey not in data['paragraphs'][pkey]['sentences'][skey]['tokens']:
-                            data['paragraphs'][pkey]['sentences'][skey]['tokens'][tkey] = {
-                                'domains': {},
-                                'tokens': {},
-                            }
-                        data['paragraphs'][pkey]['sentences'][skey]['tokens'][tkey]['domains'] = make_domains(working_entity,args)
-                        for domain in data['paragraphs'][pkey]['sentences'][skey]['tokens'][tkey]['domains']:
-                            if domain not in data['paragraphs'][pkey]['sentences'][skey]['domains']:
-                                data['paragraphs'][pkey]['sentences'][skey]['domains'][domain] = 0
-                            data['paragraphs'][pkey]['sentences'][skey]['domains'][domain] += data['paragraphs'][pkey]['sentences'][skey]['tokens'][tkey]['domains'][domain]
-                    elif args['command'] == "make-sentiments":
-                        tokens = paragraphs[pkey]['sentences'][skey]['tokens']
-                        data = make_sentiments(working_entity,tokens,args,data)
-                    paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity'] = working_entity
+            slist = list(paragraphs[pkey]['sentences'].keys())
+            smin = 0
+            smax = max(slist)
+            for s in range(smin,smax):
+                skey = slist[s]
+                data['paragraphs'][pkey]['sentences'][skey] = {
+                    'domains': {},
+                    'tokens': {},
+                }
+                doc = args['nlp-input'](paragraphs[pkey]['sentences'][skey]['text'])
+                tlist = list(paragraphs[pkey]['sentences'][skey]['tokens'].keys())
+                tmin = 0
+                tmax = max(tlist)
+                for t in range(tmin,tmax):
+                    tkey = tlist[t]
+                    token = doc[tkey]
+                    working_entity = paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity']
+                    if working_entity['relevant']:
+                        #print(pkey,skey,tkey)
+                        nrel += 1
+                        if args['command'] == "get-translations":
+                            working_entity, args = get_translation(token,working_entity,nrel,args)
+                        elif args['command'] == "get-sentiments":
+                            working_entity = get_sentiment(token,working_entity,args)
+                        elif args['command'] == "make-domains":
+                            if pkey not in data['paragraphs']:
+                                data['paragraphs'][pkey] = {
+                                    'domains': {},
+                                    'sentences': {},
+                                }
+                            if skey not in data['paragraphs'][pkey]['sentences']:
+                                data['paragraphs'][pkey]['sentences'][skey] = {
+                                    'domains': {},
+                                    'tokens': {},
+                                }
+                            if tkey not in data['paragraphs'][pkey]['sentences'][skey]['tokens']:
+                                data['paragraphs'][pkey]['sentences'][skey]['tokens'][tkey] = {
+                                    'domains': {},
+                                    'tokens': {},
+                                }
+                            data['paragraphs'][pkey]['sentences'][skey]['tokens'][tkey]['domains'] = make_domains(working_entity,args)
+                            for domain in data['paragraphs'][pkey]['sentences'][skey]['tokens'][tkey]['domains']:
+                                if domain not in data['paragraphs'][pkey]['sentences'][skey]['domains']:
+                                    data['paragraphs'][pkey]['sentences'][skey]['domains'][domain] = 0
+                                data['paragraphs'][pkey]['sentences'][skey]['domains'][domain] += data['paragraphs'][pkey]['sentences'][skey]['tokens'][tkey]['domains'][domain]
+                        elif args['command'] == "make-sentiments":
+                            tokens = paragraphs[pkey]['sentences'][skey]['tokens']
+                            data = make_sentiments(working_entity,tokens,args,data)
+                        paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity'] = working_entity
+                    if args['command'] == "make-domains":
+                        for domain in data['paragraphs'][pkey]['sentences'][skey]['domains']:
+                            if domain not in data['paragraphs'][pkey]['domains']:
+                                data['paragraphs'][pkey]['domains'][domain] = 0
+                            data['paragraphs'][pkey]['domains'][domain] += data['paragraphs'][pkey]['sentences'][skey]['domains'][domain]
             if args['command'] == "make-domains":
-                for domain in data['paragraphs'][pkey]['sentences'][skey]['domains']:
-                    if domain not in data['paragraphs'][pkey]['domains']:
-                        data['paragraphs'][pkey]['domains'][domain] = 0
-                    data['paragraphs'][pkey]['domains'][domain] += data['paragraphs'][pkey]['sentences'][skey]['domains'][domain]
-        if args['command'] == "make-domains":
-            for domain in data['paragraphs'][pkey]['domains']:
-                if domain not in data['domains']:
-                    data['domains'][domain] = 0
-                data['domains'][domain] += data['paragraphs'][pkey]['domains'][domain]
+                for domain in data['paragraphs'][pkey]['domains']:
+                    if domain not in data['domains']:
+                        data['domains'][domain] = 0
+                    data['domains'][domain] += data['paragraphs'][pkey]['domains'][domain]
+        except IndexError:
+            pass
     return paragraphs, args, data
 
 def write_csv(args,data):
