@@ -80,6 +80,16 @@ def get_args():
     ##       - spacy_udpipie
     ##       - translate module
     ##       - spacy/nltk interface to wordnet
+
+    # dictionary
+    args = get_arg('--input-dictionary',args)
+    if 'input-dictionary' in args:
+        args['dict'] = pickle.load(open(args['input-dictionary'],'rb'))
+    else:
+        args['dict'] = {}
+    args = get_arg('--output-dictionary',args)
+    if 'outpu-dictionary' in args:
+        args['output-dictionary'] = 'dictionary-output.pickle'
     
     # download models
     spacy_udpipe.download(args['input-language'])
@@ -221,11 +231,15 @@ def create_structure(paragraphs,args):
                 tn += 1
     return paragraphs
 
-def get_translation(token,working_entity,args):
-    translation = args['translator'].translate(token.lemma_)
-    print(token.lemma_, ':::', translation)
+def get_translation(token,working_entity,nrel,args):
+    if token.lemma_ in args['dict']:
+        translation = args['dict'][token.lemma_]
+    else:
+        translation = args['translator'].translate(token.lemma_)
+        args['dict'][token.lemma_] = translation
+    print("nrel=" + str(nrel), '::: ntrans=' + str(len(list(args['dict'].keys()))), ':::', token.lemma_, ':::', translation)
     working_entity['primary translation'] = translation
-    return working_entity
+    return working_entity, args
 
 def get_sentiment(token,working_entity,args):
     translation = working_entity['primary translation']
@@ -289,6 +303,7 @@ def update_paragraphs(paragraphs,args,data):
     plist = list(paragraphs.keys())
     pmin = 0
     pmax = max(plist)
+    nrel = 0
     for p in range(pmin,pmax):
         pkey = plist[p]
         data['paragraphs'][pkey] = {
@@ -314,8 +329,9 @@ def update_paragraphs(paragraphs,args,data):
                 working_entity = paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity']
                 if working_entity['relevant']:
                     #print(pkey,skey,tkey)
+                    nrel += 1
                     if args['command'] == "get-translations":
-                        working_entity = get_translation(token,working_entity,args)
+                        working_entity, args = get_translation(token,working_entity,nrel,args)
                     elif args['command'] == "get-sentiments":
                         working_entity = get_sentiment(token,working_entity,args)
                     elif args['command'] == "make-domains":
@@ -353,7 +369,7 @@ def update_paragraphs(paragraphs,args,data):
                 if domain not in data['domains']:
                     data['domains'][domain] = 0
                 data['domains'][domain] += data['paragraphs'][pkey]['domains'][domain]
-    return paragraphs, data
+    return paragraphs, args, data
 
 def write_csv(args,data):
     csv_fd = open(args['output-csv'],'w')
@@ -404,23 +420,25 @@ def main():
         # python sentimens.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         # python sentimens.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
-        paragraphs, data = update_paragraphs(paragraphs,args,data)
+        paragraphs, args, data = update_paragraphs(paragraphs,args,data)
+        pickle.dump(args['dict'],open(args['output-dictionary'],'wb'))
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     elif args['command'] == 'get-sentiments':
         # python sentimens.py --command get-sentiments --input-pickle translated.pickle --output-pickle sentiments.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
-        paragraphs, data = update_paragraphs(paragraphs,args,data)
+        paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     elif args['command'] == 'make-domains':
         # python sentimens.py --command make-domains --input-pickle sentiments.pickle
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
-        paragraphs, data = update_paragraphs(paragraphs,args,data)
+        paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         for domain in data['domains']:
             print(data['domains'][domain], domain)
     elif args['command'] == 'make-sentiments':
         # python sentimens.py --command make-sentiments --input-pickle sentiments.pickle --output-csv sentiments.csv
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
-        paragraphs, data = update_paragraphs(paragraphs,args,data)
+        paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         write_csv(args,data)
+
 if __name__ == "__main__":
     main()
