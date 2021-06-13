@@ -417,8 +417,9 @@ def main():
         paragraphs = create_structure(paragraphs,args)
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     elif args['command'] == 'get-translations':
-        # python sentimens.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
-        # python sentimens.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
+        # python sentimens.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code> --output-dictionary output-dict.pickle
+        # It's useful second time to use already generated dicitonary :)
+        # python sentimens.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code> --input-dictionary input-dict.pickle --output-dictionary output-dict.pickle
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         pickle.dump(args['dict'],open(args['output-dictionary'],'wb'))
