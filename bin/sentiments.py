@@ -1,4 +1,4 @@
-import spacy_udpipe, spacy_wordnet, spacy, nltk, re, time, pickle, sys, os
+import spacy_udpipe, spacy_wordnet, spacy, nltk, re, csv, time, pickle, sys, os
 from nltk.corpus import wordnet as wn
 from nltk.corpus import sentiwordnet as swn
 from spacy_wordnet.wordnet_annotator import WordnetAnnotator
@@ -31,7 +31,11 @@ def get_arg(arg,args):
 
 def get_args():
     args = {}
-    data = {}
+    data = {
+        'domains': {},
+        'sentiments': {},
+        'paragraphs': {},
+    }
     # timestamps
     args['start time'] = time.strftime("%Y-%m-%d %H:%M:%S")
     default_timestamp = '2020-08-24 12:00'
@@ -65,6 +69,7 @@ def get_args():
     args = get_arg('--input-language',args)
     args = get_arg('--input-pickle',args)
     args = get_arg('--output-pickle',args)
+    args = get_arg('--output-csv',args)
     if 'input-language' not in args:
         args['input-language'] = 'sr'
     args = get_arg('--working-language',args)
@@ -114,7 +119,7 @@ def add_word(language,lemma,pos,args):
 def add_synset(language,lemma,pos,args):
     working_word = add_word(language,lemma,pos,args)
     wordnet_token = args['nlp-working'](lemma)[0]
-    working_word['wordnet domain'] = wordnet_token._.wordnet.wordnet_domains()
+    working_word['domains'] = wordnet_token._.wordnet.wordnet_domains()
     try:
         # Getting WordNet part of speech not so nice as I want to avoid
         #   creating a dictionary :/
@@ -181,6 +186,8 @@ def set_working_entity(token,args):
         'positivity score': None, # construct score!
         'negativity score': None, # construct score!
         'objectivity score': None, # construct score!
+        'token id': token.i,
+        'lemma': token.lemma_,
         'relevant': False,
         'children': [],
         'working doc': [],
@@ -227,40 +234,155 @@ def get_sentiment(token,working_entity,args):
         working_word = add_synset(args['working-language'],working_token.lemma_,working_token.pos_,args)
         working_entity['working words'].append(working_word)
     return working_entity
-    
+
+def make_domains(working_entity,args):
+    domains = {}
+    working_words = working_entity['working words']
+    wmin = 0
+    wmax = len(working_words)
+    for w in range(wmin,wmax):
+        working_word = working_words[w]
+        working_domains = working_word['domains']
+        for domain in working_domains:
+            if domain not in domains:
+                domains[domain] = 0
+            domains[domain] += 1
+    return domains
+
+def make_sentiments(working_entity,others,args,data):
+    lemma = working_entity['lemma']
+    token_id = working_entity['token id']
+    if lemma not in data['sentiments']:
+        data['sentiments'][lemma] = {
+            'negativity score': 0,
+            'positivity score': 0,
+            'objectivity score': 0,
+            'sentiment addition frequency': 0,
+        }
+    working_words = working_entity['working words']
+    wmin = 0
+    wmax = len(working_words)
+    for w in range(wmin,wmax):
+        working_word = working_words[w]
+        if working_word['sentiments'] != None:
+            data['sentiments'][lemma]['negativity score'] += working_word['sentiments']['negativity score'] * float(1)/float(wmax)
+            data['sentiments'][lemma]['positivity score'] += working_word['sentiments']['positivity score'] * float(1)/float(wmax)
+            data['sentiments'][lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(wmax)
+            data['sentiments'][lemma]['sentiment addition frequency'] += 1
+            for other in others:
+                if others[other]['working entity']['token id'] != token_id:
+                    other_lemma = others[other]['working entity']['lemma']
+                    if other_lemma not in data['sentiments']:
+                        data['sentiments'][other_lemma] = {
+                            'negativity score': 0,
+                            'positivity score': 0,
+                            'objectivity score': 0,
+                            'sentiment addition frequency': 0,
+                        }
+                        data['sentiments'][other_lemma]['negativity score'] += working_word['sentiments']['negativity score'] * float(1)/float(len(others))
+                        data['sentiments'][other_lemma]['positivity score'] += working_word['sentiments']['positivity score'] * float(1)/float(len(others))
+                        data['sentiments'][other_lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(len(others))
+                        data['sentiments'][other_lemma]['sentiment addition frequency'] += 1
+    return data
+
 def update_paragraphs(paragraphs,args,data):
     plist = list(paragraphs.keys())
-    pmin = min(plist)
+    pmin = 0
     pmax = max(plist)
     for p in range(pmin,pmax):
-        try:
-            pkey = plist[p]
-            slist = list(paragraphs[pkey]['sentences'].keys())
-            smin = min(slist)
-            smax = max(slist)
-            for s in range(smin,smax):
-                try:
-                    skey = slist[s]
-                    doc = args['nlp-input'](paragraphs[pkey]['sentences'][skey]['text'])
-                    tlist = list(paragraphs[pkey]['sentences'][skey]['tokens'].keys())
-                    tmin = min(tlist)
-                    tmax = max(tlist)
-                    for t in range(tmin,tmax):
-                        tkey = tlist[t]
-                        token = doc[tkey]
-                        working_entity = paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity']
-                        if working_entity['relevant']:
-                            print(pkey,skey,tkey)
-                            if args['command'] == "get-translations":
-                                working_entity = get_translation(token,working_entity,args)
-                            if args['command'] == "get-sentiments":
-                                working_entity = get_sentiment(token,working_entity,args)
-                            paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity'] = working_entity
-                except IndexError:
-                    pass
-        except IndexError:
-            pass
+        pkey = plist[p]
+        data['paragraphs'][pkey] = {
+            'domains': {},
+            'sentences': {},
+        }
+        slist = list(paragraphs[pkey]['sentences'].keys())
+        smin = 0
+        smax = max(slist)
+        for s in range(smin,smax):
+            skey = slist[s]
+            data['paragraphs'][pkey]['sentences'][skey] = {
+                'domains': {},
+                'tokens': {},
+            }
+            doc = args['nlp-input'](paragraphs[pkey]['sentences'][skey]['text'])
+            tlist = list(paragraphs[pkey]['sentences'][skey]['tokens'].keys())
+            tmin = 0
+            tmax = max(tlist)
+            for t in range(tmin,tmax):
+                tkey = tlist[t]
+                token = doc[tkey]
+                working_entity = paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity']
+                if working_entity['relevant']:
+                    #print(pkey,skey,tkey)
+                    if args['command'] == "get-translations":
+                        working_entity = get_translation(token,working_entity,args)
+                    elif args['command'] == "get-sentiments":
+                        working_entity = get_sentiment(token,working_entity,args)
+                    elif args['command'] == "make-domains":
+                        if pkey not in data['paragraphs']:
+                            data['paragraphs'][pkey] = {
+                                'domains': {},
+                                'sentences': {},
+                            }
+                        if skey not in data['paragraphs'][pkey]['sentences']:
+                            data['paragraphs'][pkey]['sentences'][skey] = {
+                                'domains': {},
+                                'tokens': {},
+                            }
+                        if tkey not in data['paragraphs'][pkey]['sentences'][skey]['tokens']:
+                            data['paragraphs'][pkey]['sentences'][skey]['tokens'][tkey] = {
+                                'domains': {},
+                                'tokens': {},
+                            }
+                        data['paragraphs'][pkey]['sentences'][skey]['tokens'][tkey]['domains'] = make_domains(working_entity,args)
+                        for domain in data['paragraphs'][pkey]['sentences'][skey]['tokens'][tkey]['domains']:
+                            if domain not in data['paragraphs'][pkey]['sentences'][skey]['domains']:
+                                data['paragraphs'][pkey]['sentences'][skey]['domains'][domain] = 0
+                            data['paragraphs'][pkey]['sentences'][skey]['domains'][domain] += data['paragraphs'][pkey]['sentences'][skey]['tokens'][tkey]['domains'][domain]
+                    elif args['command'] == "make-sentiments":
+                        tokens = paragraphs[pkey]['sentences'][skey]['tokens']
+                        data = make_sentiments(working_entity,tokens,args,data)
+                    paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity'] = working_entity
+            if args['command'] == "make-domains":
+                for domain in data['paragraphs'][pkey]['sentences'][skey]['domains']:
+                    if domain not in data['paragraphs'][pkey]['domains']:
+                        data['paragraphs'][pkey]['domains'][domain] = 0
+                    data['paragraphs'][pkey]['domains'][domain] += data['paragraphs'][pkey]['sentences'][skey]['domains'][domain]
+        if args['command'] == "make-domains":
+            for domain in data['paragraphs'][pkey]['domains']:
+                if domain not in data['domains']:
+                    data['domains'][domain] = 0
+                data['domains'][domain] += data['paragraphs'][pkey]['domains'][domain]
     return paragraphs, data
+
+def write_csv(args,data):
+    csv_fd = open(args['output-csv'],'w')
+    csv_writer = csv.writer(csv_fd)
+    row = [
+        'lemma',
+        'sentiment addition frequency',
+        'normalized linguistic negativity score',
+        'normalized linguistic positivity score',
+        'normalized linguistic objectivity score',
+        'linguistic negativity score',
+        'linguistic positivity score',
+        'linguistic objectivity score',
+    ]
+    csv_writer.writerow(row)
+    for lemma in data['sentiments']:
+        if data['sentiments'][lemma]['sentiment addition frequency'] > 0:
+            row = [
+                lemma,
+                data['sentiments'][lemma]['sentiment addition frequency'],
+                float(data['sentiments'][lemma]['negativity score']) / float(data['sentiments'][lemma]['sentiment addition frequency']),
+                float(data['sentiments'][lemma]['positivity score']) / float(data['sentiments'][lemma]['sentiment addition frequency']),
+                float(data['sentiments'][lemma]['objectivity score']) / float(data['sentiments'][lemma]['sentiment addition frequency']),
+                data['sentiments'][lemma]['negativity score'],
+                data['sentiments'][lemma]['positivity score'],
+                data['sentiments'][lemma]['objectivity score'],
+            ]
+            csv_writer.writerow(row)
+    csv_fd.close()
 
 def main():
     args, data = get_args()
@@ -286,12 +408,19 @@ def main():
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     elif args['command'] == 'get-sentiments':
         # python sentimens.py --command get-sentiments --input-pickle translated.pickle --output-pickle sentiments.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
-        # python sentimens.py --command get-translations --input-pickle translated.pickle --output-pickle sentiments.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, data = update_paragraphs(paragraphs,args,data)
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     elif args['command'] == 'make-domains':
+        # python sentimens.py --command make-domains --input-pickle sentiments.pickle
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, data = update_paragraphs(paragraphs,args,data)
+        for domain in data['domains']:
+            print(data['domains'][domain], domain)
+    elif args['command'] == 'make-sentiments':
+        # python sentimens.py --command make-sentiments --input-pickle sentiments.pickle --output-csv sentiments.csv
+        paragraphs = pickle.load(open(args['input-pickle'],'rb'))
+        paragraphs, data = update_paragraphs(paragraphs,args,data)
+        write_csv(args,data)
 if __name__ == "__main__":
     main()
