@@ -407,8 +407,8 @@ def main():
     # 3. Get sentiments
     # 4. Make wordnet domains
     if args['command'] == 'create-structure':
-        # python sentimens.py --command create-structure --input input/file --output-pickle structure.pickle --input-language <ISO 639-1 code>
-        # python sentimens.py --command create-structure --input-text "input text" --output-pickle structure.pickle --input-language <ISO 639-1 code>
+        # python sentiments.py --command create-structure --input input/file --output-pickle structure.pickle --input-language <ISO 639-1 code>
+        # python sentiments.py --command create-structure --input-text "input text" --output-pickle structure.pickle --input-language <ISO 639-1 code>
         ## --email: optional and used for translation provider MyMemory
         ##          cf. https://translate-python.readthedocs.io/en/latest/providers.html
         ##              https://mymemory.translated.net/doc/usagelimits.php
@@ -417,26 +417,26 @@ def main():
         paragraphs = create_structure(paragraphs,args)
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     elif args['command'] == 'get-translations':
-        # python sentimens.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code> --output-dictionary output-dict.pickle
+        # python sentiments.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code> --output-dictionary output-dict.pickle
         # It's useful second time to use already generated dicitonary :)
-        # python sentimens.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code> --input-dictionary input-dict.pickle --output-dictionary output-dict.pickle
+        # python sentiments.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code> --input-dictionary input-dict.pickle --output-dictionary output-dict.pickle
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         pickle.dump(args['dict'],open(args['output-dictionary'],'wb'))
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     elif args['command'] == 'get-sentiments':
-        # python sentimens.py --command get-sentiments --input-pickle translated.pickle --output-pickle sentiments.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
+        # python sentiments.py --command get-sentiments --input-pickle translated.pickle --output-pickle sentiments.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     elif args['command'] == 'make-domains':
-        # python sentimens.py --command make-domains --input-pickle sentiments.pickle
+        # python sentiments.py --command make-domains --input-pickle sentiments.pickle
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         for domain in data['domains']:
             print(data['domains'][domain], domain)
     elif args['command'] == 'make-sentiments':
-        # python sentimens.py --command make-sentiments --input-pickle sentiments.pickle --output-csv sentiments.csv
+        # python sentiments.py --command make-sentiments --input-pickle sentiments.pickle --output-csv sentiments.csv
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         write_csv(args,data)
