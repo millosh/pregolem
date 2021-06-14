@@ -286,19 +286,19 @@ def make_sentiments(working_entity,token,others,args,data):
             data['sentiments'][lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(wmax)
             data['sentiments'][lemma]['sentiment addition frequency'] += 1
             for other in others:
-                if others[other]['working entity']['token id'] != token_id:
-                    other_lemma = others[other]['working entity']['lemma']
-                    if other_lemma not in data['sentiments']:
-                        data['sentiments'][other_lemma] = {
-                            'negativity score': 0,
-                            'positivity score': 0,
-                            'objectivity score': 0,
-                            'sentiment addition frequency': 0,
-                        }
-                        data['sentiments'][other_lemma]['negativity score'] += working_word['sentiments']['negativity score'] * float(1)/float(len(others))
-                        data['sentiments'][other_lemma]['positivity score'] += working_word['sentiments']['positivity score'] * float(1)/float(len(others))
-                        data['sentiments'][other_lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(len(others))
-                        data['sentiments'][other_lemma]['sentiment addition frequency'] += 1
+                #if others[other]['working entity']['token id'] != token_id:
+                other_lemma = others[other]['working entity']['lemma']
+                if other_lemma not in data['sentiments']:
+                    data['sentiments'][other_lemma] = {
+                        'negativity score': 0,
+                        'positivity score': 0,
+                        'objectivity score': 0,
+                        'sentiment addition frequency': 0,
+                    }
+                    data['sentiments'][other_lemma]['negativity score'] += working_word['sentiments']['negativity score'] * float(1)/float(len(others))
+                    data['sentiments'][other_lemma]['positivity score'] += working_word['sentiments']['positivity score'] * float(1)/float(len(others))
+                    data['sentiments'][other_lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(len(others))
+                    data['sentiments'][other_lemma]['sentiment addition frequency'] += 1
     return data
 
 def update_paragraphs(paragraphs,args,data):
