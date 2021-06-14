@@ -248,7 +248,7 @@ def get_sentiment(token,working_entity,nrel,args):
     for working_token in working_doc:
         working_word = add_synset(args['working-language'],working_token.lemma_,working_token.pos_,args)
         working_entity['working words'].append(working_word)
-        print(nrel, ':::', token.lemma_, ':::', working_word)
+        print(nrel, ':::', token.lemma_, ':::', working_word['lemma'])
     return working_entity
 
 def make_domains(working_entity,args):
