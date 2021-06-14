@@ -48,8 +48,11 @@ latest version of that Python branch.
     - pip install spacy_udpipe
 - Download main Spacy English language model
   - python -m spacy download en_core_web_lg en
+- Install youtube-comment-downloader if you want
+  - git clone https://github.com/egbertbouman/youtube-comment-downloader.git
 - Find the latest anaconda-*.list file and replace it with the name
-  - grep "pypi$" conda-20210606130657.list | awk '{a=a " " $1} END {print "pip install" a;}' | sh
+  - grep "pypi$" conda-20210614174911.list | awk '{a=a " " $1} END {print "pip install" a;}'
+  - Remove from the command "youtube-comment-dowloader" and "en_core_web_sm" and run the command.
 - Fix googletrans error ([[https://stackoverflow.com/questions/52455774/googletrans-stopped-working-with-error-nonetype-object-has-no-attribute-group][ref]])
   - pip uninstall googletrans
   - pip install googletrans==3.1.0a0
