@@ -171,6 +171,7 @@ def get_sentences(paragraphs,args):
         pkey = list(paragraphs.keys())[p]
         doc = args['nlp-input'](paragraphs[pkey]['text'])
         sn = 0
+        print("get sentences, paragraphs:", p, '/', pmax)
         for token in doc:
             if token.is_sent_start:
                 sentence = str(token.sent)
@@ -214,7 +215,7 @@ def create_structure(paragraphs,args):
     pmin = 0
     pmax = len(list(paragraphs.keys()))
     for p in range(pmin,pmax):
-        print(p,pmax)
+        print("get sentences:", p, '/', pmax)
         pkey = list(paragraphs.keys())[p]
         smin = 0
         smax = len(list(paragraphs[pkey]['sentences'].keys()))
