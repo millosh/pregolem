@@ -242,12 +242,13 @@ def get_translation(token,working_entity,nrel,args):
     working_entity['primary translation'] = translation
     return working_entity, args
 
-def get_sentiment(token,working_entity,args):
+def get_sentiment(token,working_entity,nrel,args):
     translation = working_entity['primary translation']
     working_doc = args['nlp-working'](working_entity['primary translation'])
     for working_token in working_doc:
         working_word = add_synset(args['working-language'],working_token.lemma_,working_token.pos_,args)
         working_entity['working words'].append(working_word)
+        print(nrel, ':::', token.lemma_, ':::', working_word)
     return working_entity
 
 def make_domains(working_entity,args):
@@ -264,7 +265,7 @@ def make_domains(working_entity,args):
             domains[domain] += 1
     return domains
 
-def make_sentiments(working_entity,others,args,data):
+def make_sentiments(working_entity,others,nrel,data):
     lemma = working_entity['lemma']
     token_id = working_entity['token id']
     if lemma not in data['sentiments']:
@@ -335,7 +336,7 @@ def update_paragraphs(paragraphs,args,data):
                         if args['command'] == "get-translations":
                             working_entity, args = get_translation(token,working_entity,nrel,args)
                         elif args['command'] == "get-sentiments":
-                            working_entity = get_sentiment(token,working_entity,args)
+                            working_entity = get_sentiment(token,working_entity,nrel,args)
                         elif args['command'] == "make-domains":
                             if pkey not in data['paragraphs']:
                                 data['paragraphs'][pkey] = {
@@ -414,7 +415,7 @@ def fix_dict(args,data):
     old_number = len(list(args['dict'].keys()))
     new_number = len(list(newdict.keys()))
     print("old number:", old_number, ":::", "new number:", new_number)
-    data['dict'] = newdict
+    args['dict'] = newdict
     return args, data
     
 def main():

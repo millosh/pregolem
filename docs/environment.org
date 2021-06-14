@@ -49,7 +49,7 @@ latest version of that Python branch.
 - Download main Spacy English language model
   - python -m spacy download en_core_web_lg en
 - Install youtube-comment-downloader if you want
-  - git clone https://github.com/egbertbouman/youtube-comment-downloader.git
+  - pip install https://github.com/egbertbouman/youtube-comment-downloader/archive/master.zip
 - Find the latest anaconda-*.list file and replace it with the name
   - grep "pypi$" conda-20210614174911.list | awk '{a=a " " $1} END {print "pip install" a;}'
   - Remove from the command "youtube-comment-dowloader" and "en_core_web_sm" and run the command.
