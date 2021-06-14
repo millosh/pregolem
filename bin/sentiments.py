@@ -404,6 +404,19 @@ def write_csv(args,data):
             csv_writer.writerow(row)
     csv_fd.close()
 
+def fix_dict(args,data):
+    newdict = {}
+    for inword in args['dict']:
+        outword = args['dict'][inword]
+        if not re.search("^MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY",outword):
+            print(inword,outword)
+            newdict[inword] = outword
+    old_number = len(list(args['dict'].keys()))
+    new_number = len(list(newdict.keys()))
+    print("old number:", old_number, ":::", "new number:", new_number)
+    data['dict'] = newdict
+    return args, data
+    
 def main():
     args, data = get_args()
     # 1. Create structure
@@ -444,6 +457,11 @@ def main():
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         write_csv(args,data)
-
+    elif args['command'] == 'fix-dict':
+        # Check the function "fix_dict" and make your own rules for cleaning the dictionary, depending of how it's been created.
+        # 
+        # python sentiments.py --command fix-dict --input-dictionary dict-in.pickle --output-dictionary dict-out.pickle
+        args, data = fix_dict(args,data)
+        pickle.dump(args['dict'],open(args['output-dictionary'],'wb'))
 if __name__ == "__main__":
     main()
