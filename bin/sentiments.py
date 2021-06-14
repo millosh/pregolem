@@ -266,6 +266,7 @@ def make_domains(working_entity,args):
     return domains
 
 def make_sentiments(working_entity,others,nrel,data):
+    print(working_entity)
     lemma = working_entity['lemma']
     token_id = working_entity['token id']
     if lemma not in data['sentiments']:
