@@ -214,6 +214,7 @@ def create_structure(paragraphs,args):
     pmin = 0
     pmax = len(list(paragraphs.keys()))
     for p in range(pmin,pmax):
+        print(p,pmax)
         pkey = list(paragraphs.keys())[p]
         smin = 0
         smax = len(list(paragraphs[pkey]['sentences'].keys()))
