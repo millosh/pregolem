@@ -104,7 +104,7 @@ def get_args():
     args['nlp-working'] = spacy.load(args['working-language'])
     args['nlp-working'].add_pipe(WordnetAnnotator(args['nlp-working'].lang), after='tagger')
     #args['nlp-working'] = spacy_udpipe.load(args['working-language'])
-    ### Spaczy 3.x
+    ### Spacy 3.x
     #args['nlp-working'] = spacy.load("en_core_web_lg")
     #args['nlp-working'].add_pipe("spacy_wordnet", after='tagger', config={'lang': args['nlp-working'].lang})
     ## Google Translate is not reliable, we are using MyMemory
