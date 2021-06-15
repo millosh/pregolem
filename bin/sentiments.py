@@ -430,8 +430,9 @@ def fix_dict(args,data):
     for inword in args['dict']:
         outword = args['dict'][inword]
         if not re.search("^MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY",outword):
-            print(inword,outword)
-            newdict[inword] = outword
+            if not re.search("^ERROR: RuntimeError occured",outword):
+                print(inword,outword)
+                newdict[inword] = outword
     old_number = len(list(args['dict'].keys()))
     new_number = len(list(newdict.keys()))
     print("old number:", old_number, ":::", "new number:", new_number)
