@@ -291,7 +291,7 @@ def make_sentiments(working_entity,token,others,doc,args,data):
     for w in range(wmin,wmax):
         working_word = working_words[w]
         if (working_word['sentiments'] != None):
-            if working_word['sentiments'] not in [ "ERROR: RuntimeError occured!", ]):
+            if working_word['sentiments'] not in [ "ERROR: RuntimeError occured!", ]:
                 data['sentiments'][lemma]['negativity score'] += working_word['sentiments']['negativity score'] * float(1)/float(wmax)
                 data['sentiments'][lemma]['positivity score'] += working_word['sentiments']['positivity score'] * float(1)/float(wmax)
                 data['sentiments'][lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(wmax)
