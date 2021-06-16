@@ -428,14 +428,17 @@ def write_csv(args,data):
 
 def fix_dict(args,data):
     newdict = {}
+    rerror = 0
     for inword in args['dict']:
         outword = args['dict'][inword]
         if not re.search("^MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY",outword):
             print(inword,outword)
             newdict[inword] = outword
+        if outword == "ERROR: RuntimeError occured!":
+            rerror += 1
     old_number = len(list(args['dict'].keys()))
     new_number = len(list(newdict.keys()))
-    print("old number:", old_number, ":::", "new number:", new_number)
+    print("old number:", old_number, ":::", "new number:", new_number, ":::", "runtime errors:", rerror)
     args['dict'] = newdict
     return args, data
     
