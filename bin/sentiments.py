@@ -254,11 +254,12 @@ def get_translation(token,working_entity,nrel,args):
 
 def get_sentiment(token,working_entity,nrel,args):
     translation = working_entity['primary translation']
-    working_doc = args['nlp-working'](working_entity['primary translation'])
-    for working_token in working_doc:
-        working_word = add_synset(args['working-language'],working_token.lemma_,working_token.pos_,args)
-        working_entity['working words'].append(working_word)
-        print(nrel, ':::', token.lemma_, ':::', working_word['lemma'])
+    if translation not in [ "ERROR: RuntimeError occured!", ]:
+        working_doc = args['nlp-working'](working_entity['primary translation'])
+        for working_token in working_doc:
+            working_word = add_synset(args['working-language'],working_token.lemma_,working_token.pos_,args)
+            working_entity['working words'].append(working_word)
+            print(nrel, ':::', token.lemma_, ':::', working_word['lemma'])
     return working_entity
 
 def make_domains(working_entity,args):
@@ -291,35 +292,34 @@ def make_sentiments(working_entity,token,others,doc,args,data):
     for w in range(wmin,wmax):
         working_word = working_words[w]
         if (working_word['sentiments'] != None):
-            if working_word not in [ "ERROR: RuntimeError occured!", ]:
-                data['sentiments'][lemma]['negativity score'] += working_word['sentiments']['negativity score'] * float(1)/float(wmax)
-                data['sentiments'][lemma]['positivity score'] += working_word['sentiments']['positivity score'] * float(1)/float(wmax)
-                data['sentiments'][lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(wmax)
-                data['sentiments'][lemma]['sentiment addition frequency'] += 1
-                #for other in others:
-                #    if others[other]['working entity']['token id'] != token_id:
-                #        other_lemma = others[other]['working entity']['lemma']
-                #        if other_lemma not in data['sentiments']:
-                #            data['sentiments'][other_lemma] = {
-                #                'negativity score': 0,
-                #                'positivity score': 0,
-                #                'objectivity score': 0,
-                #                'sentiment addition frequency': 0,
-                #            }
-                for otoken in doc:
-                    if otoken.i != token_id:
-                        other_lemma = otoken.lemma_
-                        if other_lemma not in data['sentiments']:
-                            data['sentiments'][other_lemma] = {
-                                'negativity score': 0,
-                                'positivity score': 0,
-                                'objectivity score': 0,
-                                'sentiment addition frequency': 0,
-                            }
-                            data['sentiments'][other_lemma]['negativity score'] += working_word['sentiments']['negativity score'] * float(1)/float(len(others))
-                            data['sentiments'][other_lemma]['positivity score'] += working_word['sentiments']['positivity score'] * float(1)/float(len(others))
-                            data['sentiments'][other_lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(len(others))
-                            data['sentiments'][other_lemma]['sentiment addition frequency'] += 1
+            data['sentiments'][lemma]['negativity score'] += working_word['sentiments']['negativity score'] * float(1)/float(wmax)
+            data['sentiments'][lemma]['positivity score'] += working_word['sentiments']['positivity score'] * float(1)/float(wmax)
+            data['sentiments'][lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(wmax)
+            data['sentiments'][lemma]['sentiment addition frequency'] += 1
+            #for other in others:
+            #    if others[other]['working entity']['token id'] != token_id:
+            #        other_lemma = others[other]['working entity']['lemma']
+            #        if other_lemma not in data['sentiments']:
+            #            data['sentiments'][other_lemma] = {
+            #                'negativity score': 0,
+            #                'positivity score': 0,
+            #                'objectivity score': 0,
+            #                'sentiment addition frequency': 0,
+            #            }
+            for otoken in doc:
+                if otoken.i != token_id:
+                    other_lemma = otoken.lemma_
+                    if other_lemma not in data['sentiments']:
+                        data['sentiments'][other_lemma] = {
+                            'negativity score': 0,
+                            'positivity score': 0,
+                            'objectivity score': 0,
+                            'sentiment addition frequency': 0,
+                        }
+                        data['sentiments'][other_lemma]['negativity score'] += working_word['sentiments']['negativity score'] * float(1)/float(len(others))
+                        data['sentiments'][other_lemma]['positivity score'] += working_word['sentiments']['positivity score'] * float(1)/float(len(others))
+                        data['sentiments'][other_lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(len(others))
+                        data['sentiments'][other_lemma]['sentiment addition frequency'] += 1
     return data
 
 def update_paragraphs(paragraphs,args,data):
