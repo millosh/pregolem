@@ -448,7 +448,7 @@ def parse_domain_psycho_a(args,data):
     rows = open(args['input-file'],'r').read().split("\n")
     state = 0
     rmin = 0
-    rmax = 1
+    rmax = len(rows)
     for r in range(rmin,rmax):
         row = rows[r].strip()
         if row == "%":
