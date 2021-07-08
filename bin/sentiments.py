@@ -448,7 +448,7 @@ def parse_domain_psycho_a(args,data):
     rows = open(args['input-file'],'r').read().split("\n")
     state = 0
     feature_names = {}
-    features = {}
+    domain_dict = {}
     rmin = 0
     rmax = len(rows)
     for r in range(rmin,rmax):
@@ -464,11 +464,12 @@ def parse_domain_psycho_a(args,data):
                     form_feature_ids = re.split("\t",row)
                     form = form_feature_ids[0]
                     feature_ids_numerical = form_feature_ids[1:]
-                    feature_ids = []
+                    features = []
                     for feature_id in feature_ids_numerical:
-                        feature_ids.append(feature_names[feature_id])
+                        features.append(feature_names[feature_id])
                     form = re.sub("\*",re.escape("\\w") + "*",form)
-                    print(form,feature_ids)
+                    domain_dict[form] = features
+    return domain_dict, args, data
 
 def create_domain_dict(args,data):
     if args['input-domain-file-type'] == 'psycho-a':
