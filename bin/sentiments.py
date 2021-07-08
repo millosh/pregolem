@@ -456,7 +456,7 @@ def parse_domain_psycho_a(args,data):
                 state += 1
             else:
                 if state == 1:
-                    feature_name, feature_id = re.split("\t",row)
+                    feature_id, feature_name = re.split("\t",row)
                     print(feature_name,feature_id)
                 elif state == 2:
                     form_feature_ids = re.split("\t",row)
