@@ -445,7 +445,7 @@ def fix_dict(args,data):
     return args, data
 
 def parse_domain_psycho_a(args,data):
-    rows = open(data['input-file'],'r').read()
+    rows = open(args['input-file'],'r').read()
     state = 0
     rmin = 0
     rmax = 1
