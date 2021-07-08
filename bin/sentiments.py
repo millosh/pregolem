@@ -81,7 +81,7 @@ def get_args():
     ##       - translate module
     ##       - spacy/nltk interface to wordnet
 
-    # dictionary
+    # dictionaries
     args = get_arg('--input-dictionary',args)
     if 'input-dictionary' in args:
         args['dict'] = pickle.load(open(args['input-dictionary'],'rb'))
@@ -90,6 +90,8 @@ def get_args():
     args = get_arg('--output-dictionary',args)
     if 'outpu-dictionary' in args:
         args['output-dictionary'] = 'dictionary-output.pickle'
+    args = get_arg('--input-domain_file-type',args)
+    args = get_arg('--input-file',args)
     
     # download models
     spacy_udpipe.download(args['input-language'])
@@ -441,6 +443,22 @@ def fix_dict(args,data):
     print("old number:", old_number, ":::", "new number:", new_number, ":::", "runtime errors:", rerror)
     args['dict'] = newdict
     return args, data
+
+def parse_domain_psycho_a(args,data):
+    rows = open(data['input-file'],'r').read()
+    state = 0
+    rmin = 0
+    rmax = 1
+    for r in range(rmin,rmax):
+        row = rows[r].strip()
+        if row == "%":
+            sate += 1
+        print(state)
+
+def create_domain_dict(args,data):
+    if args['input-domain-file-type'] == 'psycho-a':
+        domain_dict = parse_domain_psycho_a(args,data)
+    return domain_dict, args, data
     
 def main():
     args, data = get_args()
@@ -471,14 +489,17 @@ def main():
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
+    elif args['command'] == 'get-domain':
+        # python sentiments.py --command get-domain --input-pickle sentiments.pickle --output-pickle domain.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code> --domain-dict domain-dict.pickle --domain-language <input|output> --domain-grammar-type <form|lemma>
+        # IMPORTANT: You have to create your own domain dictionary, check "create-domain-dict".
     elif args['command'] == 'make-domains':
-        # python sentiments.py --command make-domains --input-pickle sentiments.pickle
+        # python sentiments.py --command make-domains --input-pickle psycho.pickle
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         for domain in data['domains']:
-            print(data['domains'][domain], domain)
+            print(data['domains'][domain] + "," domain)
     elif args['command'] == 'make-sentiments':
-        # python sentiments.py --command make-sentiments --input-pickle sentiments.pickle --output-csv sentiments.csv
+        # python sentiments.py --command make-sentiments --input-pickle sentiments.pickle --output-csv psycho.csv
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         write_csv(args,data)
@@ -488,5 +509,12 @@ def main():
         # python sentiments.py --command fix-dict --input-dictionary dict-in.pickle --output-dictionary dict-out.pickle
         args, data = fix_dict(args,data)
         pickle.dump(args['dict'],open(args['output-dictionary'],'wb'))
+    elif args['command'] == 'create-domain-dict':
+        # python sentiments.py --command create-domain-dict --input-domain-file-type <input-type> --input-file <input-file> --output-pickle domain-dict.pickle
+        # * input-type: particular type, described inside of particular function starting with the name "parse_domain_<type>"
+        domain_dict, args, data = create_domain_dict(args,data)
+        #pickle.dump(domain_dict,open(args['output-dict'],'wb'))
+        
+
 if __name__ == "__main__":
     main()
