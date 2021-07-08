@@ -342,7 +342,6 @@ def make_domain(working_entity,token,others,doc,args,data):
     #print(data.keys())
     if args['domain-name'] not in data['specific domains']:
         data['specific domains'][args['domain-name']] = {}
-    print(domain_dict.keys())
     for form in domain_dict:
         if re.search(form,lower):
             domain = domain_dict[form]
@@ -588,7 +587,6 @@ def main():
         # python sentiments.py --command create-domain-dict --input-domain-file-type <input-type> --input-file <input-file> --output-dictionary domain-dict.pickle  --domain-name <domain_name>
         # * input-type: particular type, described inside of particular function starting with the name "parse_domain_<type>"
         domain_dict, args, data = create_domain_dict(args,data)
-        print(type(domain_dict))
         pickle.dump(domain_dict,open(args['output-dictionary'],'wb'))
         
 
