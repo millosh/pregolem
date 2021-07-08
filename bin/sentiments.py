@@ -467,7 +467,7 @@ def parse_domain_psycho_a(args,data):
                     feature_ids = []
                     for feature_id in feature_ids_numerical:
                         feature_ids.append(feature_names[feature_id])
-                    form = re.sub("\*","\\w",form)
+                    form = re.sub("\*",re.escape("\\w"),form)
                     print(form,feature_ids)
 
 def create_domain_dict(args,data):
