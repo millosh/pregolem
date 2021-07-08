@@ -584,9 +584,10 @@ def main():
         args, data = fix_dict(args,data)
         pickle.dump(args['dict'],open(args['output-dictionary'],'wb'))
     elif args['command'] == 'create-domain-dict':
-        # python sentiments.py --command create-domain-dict --input-domain-file-type <input-type> --input-file <input-file> --output-dictionary domain-dict.pickle  --domain-name <domain_name>
+        # python sentiments.py --command create-domain-dict --input-domain-file-type <input-type> --input-file <input-file> --output-dictionary domain-dict.pickle
         # * input-type: particular type, described inside of particular function starting with the name "parse_domain_<type>"
         domain_dict, args, data = create_domain_dict(args,data)
+        print(args['output-dictionary'])
         pickle.dump(domain_dict,open(args['output-dictionary'],'wb'))
         
 
