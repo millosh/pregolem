@@ -324,6 +324,54 @@ def make_sentiments(working_entity,token,others,doc,args,data):
                         data['sentiments'][other_lemma]['sentiment addition frequency'] += 1
     return data
 
+def make_domain(working_entity,token,others,doc,args,data):
+    lemma = token.lemma_
+    token_id = token.i
+    print(dir(token))
+    sys.exit()
+    # if lemma not in data['sentiments']:
+    #     data['sentiments'][lemma] = {
+    #         'negativity score': 0,
+    #         'positivity score': 0,
+    #         'objectivity score': 0,
+    #         'sentiment addition frequency': 0,
+    #     }
+    # working_words = working_entity['working words']
+    # wmin = 0
+    # wmax = len(working_words)
+    # for w in range(wmin,wmax):
+    #     working_word = working_words[w]
+    #     if (working_word['sentiments'] != None):
+    #         data['sentiments'][lemma]['negativity score'] += working_word['sentiments']['negativity score'] * float(1)/float(wmax)
+    #         data['sentiments'][lemma]['positivity score'] += working_word['sentiments']['positivity score'] * float(1)/float(wmax)
+    #         data['sentiments'][lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(wmax)
+    #         data['sentiments'][lemma]['sentiment addition frequency'] += 1
+    #         #for other in others:
+    #         #    if others[other]['working entity']['token id'] != token_id:
+    #         #        other_lemma = others[other]['working entity']['lemma']
+    #         #        if other_lemma not in data['sentiments']:
+    #         #            data['sentiments'][other_lemma] = {
+    #         #                'negativity score': 0,
+    #         #                'positivity score': 0,
+    #         #                'objectivity score': 0,
+    #         #                'sentiment addition frequency': 0,
+    #         #            }
+    #         for otoken in doc:
+    #             if otoken.i != token_id:
+    #                 other_lemma = otoken.lemma_
+    #                 if other_lemma not in data['sentiments']:
+    #                     data['sentiments'][other_lemma] = {
+    #                         'negativity score': 0,
+    #                         'positivity score': 0,
+    #                         'objectivity score': 0,
+    #                         'sentiment addition frequency': 0,
+    #                     }
+    #                     data['sentiments'][other_lemma]['negativity score'] += working_word['sentiments']['negativity score'] * float(1)/float(len(others))
+    #                     data['sentiments'][other_lemma]['positivity score'] += working_word['sentiments']['positivity score'] * float(1)/float(len(others))
+    #                     data['sentiments'][other_lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(len(others))
+    #                     data['sentiments'][other_lemma]['sentiment addition frequency'] += 1
+    return data
+
 def update_paragraphs(paragraphs,args,data):
     plist = list(paragraphs.keys())
     pmin = 0
@@ -384,6 +432,9 @@ def update_paragraphs(paragraphs,args,data):
                         elif args['command'] == "make-sentiments":
                             tokens = paragraphs[pkey]['sentences'][skey]['tokens']
                             data = make_sentiments(working_entity,token,tokens,doc,args,data)
+                        elif args['command'] == "make-domain":
+                            tokens = paragraphs[pkey]['sentences'][skey]['tokens']
+                            data = make_domain(working_entity,token,tokens,doc,args,data)                            
                         paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity'] = working_entity
                     if args['command'] == "make-domains":
                         for domain in data['paragraphs'][pkey]['sentences'][skey]['domains']:
@@ -505,10 +556,6 @@ def main():
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
-    elif args['command'] == 'get-domain':
-        # python sentiments.py --command get-domain --input-pickle sentiments.pickle --output-pickle domain.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code> --domain-dict domain-dict.pickle --domain-language <input|output> --domain-grammar-type <form|lemma>
-        # IMPORTANT: You have to create your own domain dictionary, check "create-domain-dict".
-        pass
     elif args['command'] == 'make-domains':
         # python sentiments.py --command make-domains --input-pickle psycho.pickle
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
@@ -520,6 +567,12 @@ def main():
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         write_csv(args,data)
+    elif args['command'] == 'make-domain':
+        # python sentiments.py --command make-domain --input-pickle sentiments.pickle --output-pickle domain.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code> --domain-dict domain-dict.pickle --domain-language <input|output> --domain-grammar-type <form|lemma>
+        # IMPORTANT: You have to create your own domain dictionary, check "create-domain-dict".
+        paragraphs = pickle.load(open(args['input-pickle'],'rb'))
+        paragraphs, args, data = update_paragraphs(paragraphs,args,data)
+        pass
     elif args['command'] == 'fix-dict':
         # Check the function "fix_dict" and make your own rules for cleaning the dictionary, depending of how it's been created.
         # 
