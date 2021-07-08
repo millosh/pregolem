@@ -339,7 +339,7 @@ def make_domain(working_entity,token,others,doc,args,data):
     #args['temp number'] += 1
     #if args['temp number'] > 10:
     #    sys.exit()
-    print(data.keys())
+    #print(data.keys())
     if args['domain-name'] not in data['specific domains']:
         data['specific domains'][args['domain-name']] = {}
     print(domain_dict.keys())
@@ -525,6 +525,7 @@ def parse_domain_psycho_a(args,data):
                         features.append(feature_names[feature_id])
                     form = re.sub("\*",re.escape("\\w") + "*",form)
                     domain_dict[form] = features
+    print(type(domain_dict))
     return domain_dict, args, data
 
 def create_domain_dict(args,data):
