@@ -530,7 +530,7 @@ def main():
         # python sentiments.py --command create-domain-dict --input-domain-file-type <input-type> --input-file <input-file> --output-pickle domain-dict.pickle
         # * input-type: particular type, described inside of particular function starting with the name "parse_domain_<type>"
         domain_dict, args, data = create_domain_dict(args,data)
-        #pickle.dump(domain_dict,open(args['output-dict'],'wb'))
+        pickle.dump(domain_dict,open(args['output-dict'],'wb'))
         
 
 if __name__ == "__main__":
