@@ -498,7 +498,7 @@ def main():
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         for domain in data['domains']:
-            print(data['domains'][domain] + "," domain)
+            print(data['domains'][domain] + "," + domain)
     elif args['command'] == 'make-sentiments':
         # python sentiments.py --command make-sentiments --input-pickle sentiments.pickle --output-csv psycho.csv
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
