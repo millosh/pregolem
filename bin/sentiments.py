@@ -451,14 +451,15 @@ def parse_domain_psycho_a(args,data):
     rmax = len(rows)
     for r in range(rmin,rmax):
         row = rows[r].strip()
-        if row == "%":
-            state += 1
-        else:
-            if state == 1:
-                feature_name, feature_id = re.split("\t",row)
-                print(feature_name,feature_id)
-            elif state == 2:
-                form, feature_ids = re.split("\t",row)
+        if not re.search("^(#|$)",row):
+            if row == "%":
+                state += 1
+            else:
+                if state == 1:
+                    feature_name, feature_id = re.split("\t",row)
+                    print(feature_name,feature_id)
+                elif state == 2:
+                    form, feature_ids = re.split("\t",row)
 
 def create_domain_dict(args,data):
     if args['input-domain-file-type'] == 'psycho-a':
