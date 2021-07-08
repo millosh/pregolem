@@ -453,7 +453,8 @@ def parse_domain_psycho_a(args,data):
         row = rows[r].strip()
         if row == "%":
             state += 1
-        print(state)
+            print(row)
+            print(state)
 
 def create_domain_dict(args,data):
     if args['input-domain-file-type'] == 'psycho-a':
