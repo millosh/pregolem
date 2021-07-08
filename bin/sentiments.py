@@ -452,7 +452,7 @@ def parse_domain_psycho_a(args,data):
     for r in range(rmin,rmax):
         row = rows[r].strip()
         if row == "%":
-            sate += 1
+            state += 1
         print(state)
 
 def create_domain_dict(args,data):
