@@ -492,6 +492,7 @@ def main():
     elif args['command'] == 'get-domain':
         # python sentiments.py --command get-domain --input-pickle sentiments.pickle --output-pickle domain.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code> --domain-dict domain-dict.pickle --domain-language <input|output> --domain-grammar-type <form|lemma>
         # IMPORTANT: You have to create your own domain dictionary, check "create-domain-dict".
+        pass
     elif args['command'] == 'make-domains':
         # python sentiments.py --command make-domains --input-pickle psycho.pickle
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
