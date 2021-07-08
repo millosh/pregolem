@@ -525,7 +525,6 @@ def parse_domain_psycho_a(args,data):
                         features.append(feature_names[feature_id])
                     form = re.sub("\*",re.escape("\\w") + "*",form)
                     domain_dict[form] = features
-    print(type(domain_dict))
     return domain_dict, args, data
 
 def create_domain_dict(args,data):
@@ -589,6 +588,7 @@ def main():
         # python sentiments.py --command create-domain-dict --input-domain-file-type <input-type> --input-file <input-file> --output-dictionary domain-dict.pickle  --domain-name <domain_name>
         # * input-type: particular type, described inside of particular function starting with the name "parse_domain_<type>"
         domain_dict, args, data = create_domain_dict(args,data)
+        print(type(domain_dict))
         pickle.dump(domain_dict,open(args['output-dictionary'],'wb'))
         
 
