@@ -329,7 +329,11 @@ def make_domain(working_entity,token,others,doc,args,data):
     lower = token.lower_
     token_id = token.i
     print(dir(token),lemma,lower)
-    sys.exit()
+    if 'temp number' not in args:
+        args['temp number'] = 0
+    args['temp number'] += 1
+    if args['temp number'] > 10:
+        sys.exit()
     # if lemma not in data['sentiments']:
     #     data['sentiments'][lemma] = {
     #         'negativity score': 0,
@@ -371,7 +375,7 @@ def make_domain(working_entity,token,others,doc,args,data):
     #                     data['sentiments'][other_lemma]['positivity score'] += working_word['sentiments']['positivity score'] * float(1)/float(len(others))
     #                     data['sentiments'][other_lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(len(others))
     #                     data['sentiments'][other_lemma]['sentiment addition frequency'] += 1
-    return data
+    return args, data
 
 def update_paragraphs(paragraphs,args,data):
     plist = list(paragraphs.keys())
@@ -435,7 +439,7 @@ def update_paragraphs(paragraphs,args,data):
                             data = make_sentiments(working_entity,token,tokens,doc,args,data)
                         elif args['command'] == "make-domain":
                             tokens = paragraphs[pkey]['sentences'][skey]['tokens']
-                            data = make_domain(working_entity,token,tokens,doc,args,data)                            
+                            args, data = make_domain(working_entity,token,tokens,doc,args,data)                            
                         paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity'] = working_entity
                     if args['command'] == "make-domains":
                         for domain in data['paragraphs'][pkey]['sentences'][skey]['domains']:
