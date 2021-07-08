@@ -343,6 +343,7 @@ def make_domain(working_entity,token,others,doc,args,data):
     if args['domain-name'] not in data['specific domains']:
         data['specific domains'][args['domain-name']] = {}
     for form in domain_dict:
+        print(form)
         if re.search(form,lower):
             domain = domain_dict[form]
             if lemma not in data['specific domains'][args['domain-name']]:
