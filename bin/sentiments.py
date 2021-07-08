@@ -463,6 +463,7 @@ def parse_domain_psycho_a(args,data):
                     form_feature_ids = re.split("\t",row)
                     form = form_feature_ids[0]
                     feature_ids_numerical = form_feature_ids[1:]
+                    feature_ids = []
                     for feature_id in feature_ids_numerical:
                         feature_ids.append(features[feature_id])
                     print(feature_name,feature_ids)
