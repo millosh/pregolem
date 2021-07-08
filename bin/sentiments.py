@@ -90,7 +90,7 @@ def get_args():
     args = get_arg('--output-dictionary',args)
     if 'outpu-dictionary' in args:
         args['output-dictionary'] = 'dictionary-output.pickle'
-    args = get_arg('--input-domain_file-type',args)
+    args = get_arg('--input-domain-file-type',args)
     args = get_arg('--input-file',args)
     
     # download models
