@@ -339,6 +339,7 @@ def make_domain(working_entity,token,others,doc,args,data):
     #args['temp number'] += 1
     #if args['temp number'] > 10:
     #    sys.exit()
+    print(data.keys())
     if args['domain-name'] not in data['specific domains']:
         args['specific domains'][args['domain-name']] = {}
     for form in domain_dict:
