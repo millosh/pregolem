@@ -33,7 +33,7 @@ def get_args():
     args = {}
     data = {
         'domains': {},
-        'sepcific domains': {},
+        'specific domains': {},
         'sentiments': {},
         'paragraphs': {},
     }
