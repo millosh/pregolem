@@ -467,8 +467,8 @@ def parse_domain_psycho_a(args,data):
                     feature_ids = []
                     for feature_id in feature_ids_numerical:
                         feature_ids.append(feature_names[feature_id])
-                    if re.search("\*",feature_name):
-                        print(feature_name,feature_ids)
+                    if re.search("\*",form):
+                        print(form,feature_ids)
 
 def create_domain_dict(args,data):
     if args['input-domain-file-type'] == 'psycho-a':
