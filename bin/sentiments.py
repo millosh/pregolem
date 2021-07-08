@@ -364,16 +364,16 @@ def make_domain(working_entity,token,others,doc,args,data):
     for w in range(wmin,wmax):
         working_word = working_words[w]
         for form in domain_dict:
-            data['specific domains'][args['domain name']][lemma][domain] += float(1)/float(wmax)
+            data['specific domains'][args['domain-name']][lemma][domain] += float(1)/float(wmax)
             for otoken in doc:
                 if otoken.i != token_id:
                     other_lemma = otoken.lemma_
                     other_lower = otoken.lower_
-                    if other_lemma not in data['specific domains'][args['domain name']]:
-                        data['specific domains'][args['domain name']][other_lemma] = {}
-                    if domain not in data['specific domains'][args['domain name']][other_lemma]:
-                        data['specific domains'][args['domain name']][other_lemma][domain] = 0
-                    data['specific domains'][args['domain name']][other_lemma][domain] = (data['specific domains'][args['domain name']][lemma][domain] + 1)/2
+                    if other_lemma not in data['specific domains'][args['domain-name']]:
+                        data['specific domains'][args['domain-name']][other_lemma] = {}
+                    if domain not in data['specific domains'][args['domain-name']][other_lemma]:
+                        data['specific domains'][args['domain-name']][other_lemma][domain] = 0
+                    data['specific domains'][args['domain-name']][other_lemma][domain] = (data['specific domains'][args['domain-name']][lemma][domain] + 1)/2
     return args, data
 
 def update_paragraphs(paragraphs,args,data):
