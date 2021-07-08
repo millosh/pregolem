@@ -329,7 +329,7 @@ def make_sentiments(working_entity,token,others,doc,args,data):
     return data
 
 def make_domain(working_entity,token,others,doc,args,data):
-    domain_dict = pickle.load(open(args['domain-dictionary']))
+    domain_dict = pickle.load(open(args['domain-dictionary'],'rb'))
     lemma = token.lemma_
     lower = token.lower_
     token_id = token.i
