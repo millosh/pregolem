@@ -90,7 +90,7 @@ def get_args():
     else:
         args['dict'] = {}
     args = get_arg('--output-dictionary',args)
-    if 'output-dictionary' in args:
+    if 'output-dictionary' not in args:
         args['output-dictionary'] = 'dictionary-output.pickle'
     args = get_arg('--input-domain-file-type',args)
     args = get_arg('--input-file',args)
