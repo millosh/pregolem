@@ -529,7 +529,7 @@ def parse_domain_psycho_a(args,data):
 
 def create_domain_dict(args,data):
     if args['input-domain-file-type'] == 'psycho-a':
-        domain_dict = parse_domain_psycho_a(args,data)
+        domain_dict, args, data = parse_domain_psycho_a(args,data)
     return domain_dict, args, data
     
 def main():
