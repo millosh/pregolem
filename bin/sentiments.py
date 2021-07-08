@@ -326,8 +326,9 @@ def make_sentiments(working_entity,token,others,doc,args,data):
 
 def make_domain(working_entity,token,others,doc,args,data):
     lemma = token.lemma_
+    lower = token.lower_
     token_id = token.i
-    print(dir(token))
+    print(dir(token),lemma,lower)
     sys.exit()
     # if lemma not in data['sentiments']:
     #     data['sentiments'][lemma] = {
