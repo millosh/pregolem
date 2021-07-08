@@ -90,10 +90,11 @@ def get_args():
     else:
         args['dict'] = {}
     args = get_arg('--output-dictionary',args)
-    if 'outpu-dictionary' in args:
+    if 'output-dictionary' in args:
         args['output-dictionary'] = 'dictionary-output.pickle'
     args = get_arg('--input-domain-file-type',args)
     args = get_arg('--input-file',args)
+    args = get_arg('--domain-dictionary',args)
     
     # download models
     spacy_udpipe.download(args['input-language'])
@@ -328,7 +329,7 @@ def make_sentiments(working_entity,token,others,doc,args,data):
     return data
 
 def make_domain(working_entity,token,others,doc,args,data):
-    domain_dict = pickle.load(open(args['domain-dict']))
+    domain_dict = pickle.load(open(args['domain-dictionary']))
     lemma = token.lemma_
     lower = token.lower_
     token_id = token.i
@@ -570,7 +571,7 @@ def main():
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         write_csv(args,data)
     elif args['command'] == 'make-domain':
-        # python sentiments.py --command make-domain --input-pickle sentiments.pickle --output-pickle domain.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code> --domain-dict domain-dict.pickle --domain-language <input|output> --domain-grammar-type <form|lemma>
+        # python sentiments.py --command make-domain --input-pickle sentiments.pickle --output-pickle domain.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code> --domain-dict domain-dictionary.pickle --domain-language <input|output> --domain-grammar-type <form|lemma>
         # IMPORTANT: You have to create your own domain dictionary, check "create-domain-dict".
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
