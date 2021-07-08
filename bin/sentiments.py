@@ -344,12 +344,12 @@ def make_domain(working_entity,token,others,doc,args,data):
         data['specific domains'][args['domain-name']] = {}
     for form in domain_dict:
         if re.search(form,lower):
-            domain = domain_dict[form]
-            if lemma not in data['specific domains'][args['domain-name']]:
-                data['specific domains'][args['domain-name']][lemma] = {}
-            if domain not in data['specific domains'][args['domain-name']][lemma]:
-                data['specific domains'][args['domain-name']][lemma][domain] = 0
-            data['specific domains'][args['domain-name']][lemma][domain] = (data['specific domains'][args['domain-name']][lemma][domain] + 1)/2
+            for domain in domain_dict[form]:
+                if lemma not in data['specific domains'][args['domain-name']]:
+                    data['specific domains'][args['domain-name']][lemma] = {}
+                if domain not in data['specific domains'][args['domain-name']][lemma]:
+                    data['specific domains'][args['domain-name']][lemma][domain] = 0
+                data['specific domains'][args['domain-name']][lemma][domain] = (data['specific domains'][args['domain-name']][lemma][domain] + 1)/2
     
     # if lemma not in data['sentiments']:
     #     data['sentiments'][lemma] = {
