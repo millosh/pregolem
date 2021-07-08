@@ -33,6 +33,7 @@ def get_args():
     args = {}
     data = {
         'domains': {},
+        'sepcific domains': {},
         'sentiments': {},
         'paragraphs': {},
     }
@@ -75,6 +76,7 @@ def get_args():
     args = get_arg('--working-language',args)
     if 'working-language' not in args:
         args['working-language'] = 'en'
+    args = get_arg('--domain-name',args)
     ## TODO: specify different input and working languages for:
     ##       - spacy
     ##       - spacy_udpipie
@@ -318,22 +320,35 @@ def make_sentiments(working_entity,token,others,doc,args,data):
                             'objectivity score': 0,
                             'sentiment addition frequency': 0,
                         }
-                        data['sentiments'][other_lemma]['negativity score'] += working_word['sentiments']['negativity score'] * float(1)/float(len(others))
-                        data['sentiments'][other_lemma]['positivity score'] += working_word['sentiments']['positivity score'] * float(1)/float(len(others))
-                        data['sentiments'][other_lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(len(others))
-                        data['sentiments'][other_lemma]['sentiment addition frequency'] += 1
+                    # maybe this should go under IF...
+                    data['sentiments'][other_lemma]['negativity score'] += working_word['sentiments']['negativity score'] * float(1)/float(len(others))
+                    data['sentiments'][other_lemma]['positivity score'] += working_word['sentiments']['positivity score'] * float(1)/float(len(others))
+                    data['sentiments'][other_lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(len(others))
+                    data['sentiments'][other_lemma]['sentiment addition frequency'] += 1
     return data
 
 def make_domain(working_entity,token,others,doc,args,data):
+    domain_dict = pickle.load(open(args['domain-dict']))
     lemma = token.lemma_
     lower = token.lower_
     token_id = token.i
-    print(dir(token),lemma,lower)
-    if 'temp number' not in args:
-        args['temp number'] = 0
-    args['temp number'] += 1
-    if args['temp number'] > 10:
-        sys.exit()
+    #print(dir(token),lemma,lower)
+    #if 'temp number' not in args:
+    #    args['temp number'] = 0
+    #args['temp number'] += 1
+    #if args['temp number'] > 10:
+    #    sys.exit()
+    if args['domain name'] not in data['specific domains']:
+        args['specific domains'][args['domain name']] = {}
+    for form in domain_dict:
+        if re.search(form,lower):
+            domain = domain_dict[form]
+            if lemma not in data['specific domains'][args['domain name']]:
+                data['specific domains'][args['domain name']][lemma] = {}
+            if domain not in data['specific domains'][args['domain name']][lemma]:
+                data['specific domains'][args['domain name']][lemma][domain] = 0
+            data['specific domains'][args['domain name']][lemma][domain] = (data['specific domains'][args['domain name']][lemma][domain] + 1)/2
+    
     # if lemma not in data['sentiments']:
     #     data['sentiments'][lemma] = {
     #         'negativity score': 0,
@@ -341,40 +356,22 @@ def make_domain(working_entity,token,others,doc,args,data):
     #         'objectivity score': 0,
     #         'sentiment addition frequency': 0,
     #     }
-    # working_words = working_entity['working words']
-    # wmin = 0
-    # wmax = len(working_words)
-    # for w in range(wmin,wmax):
-    #     working_word = working_words[w]
-    #     if (working_word['sentiments'] != None):
-    #         data['sentiments'][lemma]['negativity score'] += working_word['sentiments']['negativity score'] * float(1)/float(wmax)
-    #         data['sentiments'][lemma]['positivity score'] += working_word['sentiments']['positivity score'] * float(1)/float(wmax)
-    #         data['sentiments'][lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(wmax)
-    #         data['sentiments'][lemma]['sentiment addition frequency'] += 1
-    #         #for other in others:
-    #         #    if others[other]['working entity']['token id'] != token_id:
-    #         #        other_lemma = others[other]['working entity']['lemma']
-    #         #        if other_lemma not in data['sentiments']:
-    #         #            data['sentiments'][other_lemma] = {
-    #         #                'negativity score': 0,
-    #         #                'positivity score': 0,
-    #         #                'objectivity score': 0,
-    #         #                'sentiment addition frequency': 0,
-    #         #            }
-    #         for otoken in doc:
-    #             if otoken.i != token_id:
-    #                 other_lemma = otoken.lemma_
-    #                 if other_lemma not in data['sentiments']:
-    #                     data['sentiments'][other_lemma] = {
-    #                         'negativity score': 0,
-    #                         'positivity score': 0,
-    #                         'objectivity score': 0,
-    #                         'sentiment addition frequency': 0,
-    #                     }
-    #                     data['sentiments'][other_lemma]['negativity score'] += working_word['sentiments']['negativity score'] * float(1)/float(len(others))
-    #                     data['sentiments'][other_lemma]['positivity score'] += working_word['sentiments']['positivity score'] * float(1)/float(len(others))
-    #                     data['sentiments'][other_lemma]['objectivity score'] += working_word['sentiments']['objectivity score'] * float(1)/float(len(others))
-    #                     data['sentiments'][other_lemma]['sentiment addition frequency'] += 1
+    working_words = working_entity['working words']
+    wmin = 0
+    wmax = len(working_words)
+    for w in range(wmin,wmax):
+        working_word = working_words[w]
+        for form in domain_dict:
+            data['specific domains'][args['domain name']][lemma][domain] += float(1)/float(wmax)
+            for otoken in doc:
+                if otoken.i != token_id:
+                    other_lemma = otoken.lemma_
+                    other_lower = otoken.lower_
+                    if other_lemma not in data['specific domains'][args['domain name']]:
+                        data['specific domains'][args['domain name']][other_lemma] = {}
+                    if domain not in data['specific domains'][args['domain name']][other_lemma]:
+                        data['specific domains'][args['domain name']][other_lemma][domain] = 0
+                    data['specific domains'][args['domain name']][other_lemma][domain] = (data['specific domains'][args['domain name']][lemma][domain] + 1)/2
     return args, data
 
 def update_paragraphs(paragraphs,args,data):
@@ -407,7 +404,7 @@ def update_paragraphs(paragraphs,args,data):
                     token = doc[tkey]
                     working_entity = paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity']
                     if working_entity['relevant']:
-                        #print(pkey,skey,tkey)
+                        print(pkey,skey,tkey)
                         nrel += 1
                         if args['command'] == "get-translations":
                             working_entity, args = get_translation(token,working_entity,nrel,args)
@@ -585,7 +582,7 @@ def main():
         args, data = fix_dict(args,data)
         pickle.dump(args['dict'],open(args['output-dictionary'],'wb'))
     elif args['command'] == 'create-domain-dict':
-        # python sentiments.py --command create-domain-dict --input-domain-file-type <input-type> --input-file <input-file> --output-dictionary domain-dict.pickle
+        # python sentiments.py --command create-domain-dict --input-domain-file-type <input-type> --input-file <input-file> --output-dictionary domain-dict.pickle  --domain-name <domain_name>
         # * input-type: particular type, described inside of particular function starting with the name "parse_domain_<type>"
         domain_dict, args, data = create_domain_dict(args,data)
         pickle.dump(domain_dict,open(args['output-dictionary'],'wb'))
