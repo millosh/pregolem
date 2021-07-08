@@ -459,6 +459,7 @@ def parse_domain_psycho_a(args,data):
                     feature_name, feature_id = re.split("\t",row)
                     print(feature_name,feature_id)
                 elif state == 2:
+                    print(row)
                     form, feature_ids = re.split("\t",row)
 
 def create_domain_dict(args,data):
