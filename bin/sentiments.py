@@ -567,7 +567,7 @@ def main():
         for domain in data['domains']:
             print(data['domains'][domain] + "," + domain)
     elif args['command'] == 'make-sentiments':
-        # python sentiments.py --command make-sentiments --input-pickle sentiments.pickle --output-csv psycho.csv
+        # python sentiments.py --command make-sentiments --input-pickle sentiments.pickle --output-csv sentimens.csv
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
         write_csv(args,data)
@@ -576,7 +576,7 @@ def main():
         # IMPORTANT: You have to create your own domain dictionary, check "create-domain-dict".
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
-        pass
+        pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     elif args['command'] == 'fix-dict':
         # Check the function "fix_dict" and make your own rules for cleaning the dictionary, depending of how it's been created.
         # 
