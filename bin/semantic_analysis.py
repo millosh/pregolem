@@ -127,6 +127,24 @@ def get_args():
 
     return args, data
 
+def set_working_entity(token,args):
+    working_entity = {
+        'positivity score': None, # construct score!
+        'negativity score': None, # construct score!
+        'objectivity score': None, # construct score!
+        'token id': token.i,
+        'lemma': token.lemma_,
+        'relevant': False,
+        'children': [],
+        'working doc': [],
+        'working words': [],
+    }
+    for child in token.subtree:
+        working_entity['children'].append(child.i)
+    if token.pos_ in args['relevant parts of speech']:
+        working_entity['relevant'] = True
+    return working_entity
+
 def create_structure(paragraphs,args):
     tw = 0
     pmin = 0
