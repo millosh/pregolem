@@ -183,20 +183,24 @@ def process_text(args):
             }
     return paragraphs
 
+def update_paragraphs(paragraphs,args,data):
+    plist = list(paragraphs.keys())
+    pmin = 0
+    pmax = max(plist)
+    nrel = 0
+    for p in range(pmin,pmax):
+        pkey = plist[p]
+        print(pkey)
+    return praragraphs, args, data
+
 def main():
     args, data = get_args()
-    if args['command'] == 'parse':
-        # python semantic_analysis.py --command parse --input input/file --output-pickle structure.pickle --input-language <ISO 639-1 code>
-        paragraphs = process_text(args)
-        paragraphs = get_sentences(paragraphs,args)
-        paragraphs = create_structure(paragraphs,args)
-        pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
-    # 1. Create structure
-    # 2. Get translations
-    # 3. Get sentiments
-    # 4. Make wordnet domains
-    elif args['command'] == 'create-structure':
-        # python sentiments.py --command create-structure --input input/file --output-pickle structure.pickle --input-language <ISO 639-1 code>
+    if args['command'] == 'create-structure':
+        # 1. Create structure
+        # 2. Get translations
+        # 3. Get sentiments
+        # 4. Make wordnet domains
+        # python semantic_analysis.py --command create-structure --input input/file --output-pickle structure.pickle --input-language <ISO 639-1 code>
         # python sentiments.py --command create-structure --input-text "input text" --output-pickle structure.pickle --input-language <ISO 639-1 code>
         ## --email: optional and used for translation provider MyMemory
         ##          cf. https://translate-python.readthedocs.io/en/latest/providers.html
