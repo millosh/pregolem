@@ -127,6 +127,29 @@ def get_args():
 
     return args, data
 
+def create_structure(paragraphs,args):
+    tw = 0
+    pmin = 0
+    pmax = len(list(paragraphs.keys()))
+    for p in range(pmin,pmax):
+        print("get sentences:", p, '/', pmax)
+        pkey = list(paragraphs.keys())[p]
+        smin = 0
+        smax = len(list(paragraphs[pkey]['sentences'].keys()))
+        for s in range(smin,smax):
+            skey = list(paragraphs[pkey]['sentences'].keys())[s]
+            doc = args['nlp-input'](paragraphs[pkey]['sentences'][skey]['text'])
+            tn = 0
+            for token in doc:
+                print(pkey, ":::", skey, ":::", tn, ":::", token.text, ":::",)
+                working_entity = set_working_entity(token,args)
+                paragraphs[pkey]['sentences'][skey]['tokens'][tn] = {
+                    'text': str(token.text),
+                    'working entity': working_entity,
+                }
+                tn += 1
+    return paragraphs
+
 def get_sentences(paragraphs,args):
     pmin = 0
     pmax = len(list(paragraphs.keys()))
@@ -166,6 +189,8 @@ def main():
         # python semantic_analysis.py --command parse --input input/file --output-pickle structure.pickle --input-language <ISO 639-1 code>
         paragraphs = process_text(args)
         paragraphs = get_sentences(paragraphs,args)
+        paragraphs = create_structure(paragraphs,args)
+        pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     # 1. Create structure
     # 2. Get translations
     # 3. Get sentiments
