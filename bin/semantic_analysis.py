@@ -215,6 +215,7 @@ def update_paragraphs(paragraphs,args,data):
             'sentences': {},
         }
         slist = list(paragraphs[pkey]['sentences'].keys())
+        print(slist)
         smin = 0
         smax = max(slist)
         for s in range(smin,smax):
