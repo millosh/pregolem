@@ -207,8 +207,9 @@ def update_paragraphs(paragraphs,args,data):
     pmax = max(plist)
     nrel = 0
     for p in range(pmin,pmax):
-        pkey = plist[p]
-        print(pkey)
+        #pkey = plist[p]
+        print(p)
+        #print(pkey)
     return praragraphs, args, data
 
 def main():
