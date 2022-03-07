@@ -204,8 +204,27 @@ def process_text(args):
 def update_paragraphs(paragraphs,args,data):
     p = 0
     nrel = 0
-    for pkey in paragraphs:        
-        print(pkey)
+    stop = len(paragraphs)
+    stop = 1
+    for pkey in paragraphs:
+        data['paragraphs'][pkey] = {
+            'domains': {},
+            'sentences': {},
+        }
+        slist = list(paragraphs[pkey]['sentences'].keys())
+        smin = 0
+        smax = max(slist)
+        for s in range(smin,smax):
+            skey = slist[s]
+            data['paragraphs'][pkey]['sentences'][skey] = {
+                'domains': {},
+                'tokens': {},
+            }
+            doc = args['nlp-input'](paragraphs[pkey]['sentences'][skey]['text'])
+            tlist = list(paragraphs[pkey]['sentences'][skey]['tokens'].keys())
+            tmin = 0
+            tmax = max(tlist)
+        
         p += 1
     return paragraphs,args,data
 
