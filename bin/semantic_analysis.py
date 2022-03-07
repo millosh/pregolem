@@ -207,36 +207,34 @@ def update_paragraphs(paragraphs,args,data):
     start = 3
     stop = len(paragraphs)
     stop = 5
+    exact = 4
     for pkey in paragraphs:
-        if p in range(0,start):
-            continue
-        if p >= stop:
-            break
-        #print(pkey, len(paragraphs))
-        data['paragraphs'][pkey] = {
-            'domains': {},
-            'sentences': {},
-        }
-        print(paragraphs[pkey]['sentences'])
-        slist = list(paragraphs[pkey]['sentences'].keys())
-        #print(slist)
-        smin = 0
-        smax = max(slist)
-        for s in range(smin,smax):
-            skey = slist[s]
-            data['paragraphs'][pkey]['sentences'][skey] = {
+        if p == exact:
+            #print(pkey, len(paragraphs))
+            data['paragraphs'][pkey] = {
                 'domains': {},
-                'tokens': {},
+                'sentences': {},
             }
-            doc = args['nlp-input'](paragraphs[pkey]['sentences'][skey]['text'])
-            #print(doc)
-            tlist = list(paragraphs[pkey]['sentences'][skey]['tokens'].keys())
-            tmin = 0
-            tmax = max(tlist)
-            for t in range(tmin,tmax):
-                tkey = tlist[t]
-                token = doc[tkey]
-                working_entity = paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity']
+            print(paragraphs[pkey]['sentences'])
+            slist = list(paragraphs[pkey]['sentences'].keys())
+            #print(slist)
+            smin = 0
+            smax = max(slist)
+            for s in range(smin,smax):
+                skey = slist[s]
+                data['paragraphs'][pkey]['sentences'][skey] = {
+                    'domains': {},
+                    'tokens': {},
+                }
+                doc = args['nlp-input'](paragraphs[pkey]['sentences'][skey]['text'])
+                #print(doc)
+                tlist = list(paragraphs[pkey]['sentences'][skey]['tokens'].keys())
+                tmin = 0
+                tmax = max(tlist)
+                for t in range(tmin,tmax):
+                    tkey = tlist[t]
+                    token = doc[tkey]
+                    working_entity = paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity']
                 
         p += 1
     return paragraphs,args,data
