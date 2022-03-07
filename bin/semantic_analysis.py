@@ -204,9 +204,9 @@ def process_text(args):
 def update_paragraphs(paragraphs,args,data):
     p = 0
     nrel = 0
-    start = 50
+    start = 100
     stop = len(paragraphs)
-    stop = 60
+    stop = 110
     for pkey in paragraphs:
         if p <= start:
             next
