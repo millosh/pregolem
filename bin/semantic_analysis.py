@@ -220,13 +220,14 @@ def main():
         # 4. Make wordnet domains
         # python semantic_analysis.py --command create-structure --input input/file --output-pickle structure.pickle --input-language <ISO 639-1 code>
         # python sentiments.py --command create-structure --input-text "input text" --output-pickle structure.pickle --input-language <ISO 639-1 code>
-        ## --email: optional and used for translation provider MyMemory
-        ##          cf. https://translate-python.readthedocs.io/en/latest/providers.html
-        ##              https://mymemory.translated.net/doc/usagelimits.php
         paragraphs = process_text(args)
         paragraphs = get_sentences(paragraphs,args)
         paragraphs = create_structure(paragraphs,args)
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
+    elif args['command'] == 'analyze-sentences':
+        # python sentiments.py --command analyze-sentences --input-pickle sa-structure.pickle --output-pickle sa-sentences.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
+        paragraphs = pickle.load(open(args['input-pickle'],'rb'))
+        paragraphs, args, data = update_paragraphs(paragraphs,args,data)
     elif args['command'] == 'get-translations':
         # python sentiments.py --command get-translations --email your@email --input-pickle structure.pickle --output-pickle translated.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code> --output-dictionary output-dict.pickle
         # It's useful second time to use already generated dicitonary :)
