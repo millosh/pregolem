@@ -214,6 +214,7 @@ def update_paragraphs(paragraphs,args,data):
             'domains': {},
             'sentences': {},
         }
+        print(paragraphs[pkey]['sentences'])
         slist = list(paragraphs[pkey]['sentences'].keys())
         print(slist)
         smin = 0
