@@ -215,7 +215,7 @@ def update_paragraphs(paragraphs,args,data):
                 'domains': {},
                 'sentences': {},
             }
-            print(paragraphs[pkey]['sentences'])
+            #print(paragraphs[pkey]['sentences'])
             slist = list(paragraphs[pkey]['sentences'].keys())
             #print(slist)
             smin = 0
@@ -227,7 +227,7 @@ def update_paragraphs(paragraphs,args,data):
                     'tokens': {},
                 }
                 doc = args['nlp-input'](paragraphs[pkey]['sentences'][skey]['text'])
-                #print(doc)
+                print(doc)
                 tlist = list(paragraphs[pkey]['sentences'][skey]['tokens'].keys())
                 tmin = 0
                 tmax = max(tlist)
