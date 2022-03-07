@@ -208,7 +208,7 @@ def update_paragraphs(paragraphs,args,data):
     stop = len(paragraphs)
     stop = 5
     for pkey in paragraphs:
-        if p < start:
+        if p in range(0,start):
             continue
         if p >= stop:
             break
