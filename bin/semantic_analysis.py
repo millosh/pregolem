@@ -219,7 +219,7 @@ def main():
         # 3. Get sentiments
         # 4. Make wordnet domains
         # python semantic_analysis.py --command create-structure --input input/file --output-pickle structure.pickle --input-language <ISO 639-1 code>
-        # python sentiments.py --command create-structure --input-text "input text" --output-pickle structure.pickle --input-language <ISO 639-1 code>
+        # python semantic_analysis.py --command create-structure --input-text "input text" --output-pickle structure.pickle --input-language <ISO 639-1 code>
         paragraphs = process_text(args)
         paragraphs = get_sentences(paragraphs,args)
         paragraphs = create_structure(paragraphs,args)
