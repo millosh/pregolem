@@ -207,6 +207,8 @@ def update_paragraphs(paragraphs,args,data):
     stop = len(paragraphs)
     stop = 1
     for pkey in paragraphs:
+        if p >= stop:
+            break
         print(pkey, len(paragraphs))
         data['paragraphs'][pkey] = {
             'domains': {},
@@ -225,7 +227,11 @@ def update_paragraphs(paragraphs,args,data):
             tlist = list(paragraphs[pkey]['sentences'][skey]['tokens'].keys())
             tmin = 0
             tmax = max(tlist)
-        
+            for t in range(tmin,tmax):
+                tkey = tlist[t]
+                token = doc[tkey]
+                working_entity = paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity']
+                
         p += 1
     return paragraphs,args,data
 
