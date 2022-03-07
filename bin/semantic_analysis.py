@@ -204,12 +204,11 @@ def process_text(args):
 def update_paragraphs(paragraphs,args,data):
     plist = list(paragraphs.keys())
     pmin = 0
-    pmax = max(plist)
+    pmax = max(plist)-1 # -1 because of whatever... the list has one item less
     nrel = 0
     for p in range(pmin,pmax):
-        #pkey = plist[p]
-        print(p)
-        #print(pkey)
+        pkey = plist[p]
+        print(pkey)
     return praragraphs, args, data
 
 def main():
