@@ -216,12 +216,12 @@ def update_paragraphs(paragraphs,args,data):
                 'sentences': {},
             }
             #print(paragraphs[pkey]['sentences'])
+            s = 0
             slist = list(paragraphs[pkey]['sentences'].keys())
             #print(slist)
             smin = 0
             smax = max(slist)
-            for s in range(smin,smax):
-                skey = slist[s]
+            for skey in paragraphs[pkey]['sentence']:
                 data['paragraphs'][pkey]['sentences'][skey] = {
                     'domains': {},
                     'tokens': {},
@@ -235,6 +235,7 @@ def update_paragraphs(paragraphs,args,data):
                     tkey = tlist[t]
                     token = doc[tkey]
                     working_entity = paragraphs[pkey]['sentences'][skey]['tokens'][tkey]['working entity']
+                s += 1
                 
         p += 1
     return paragraphs,args,data
