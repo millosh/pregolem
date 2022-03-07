@@ -225,7 +225,7 @@ def main():
         paragraphs = create_structure(paragraphs,args)
         pickle.dump(paragraphs,open(args['output-pickle'],'wb'))
     elif args['command'] == 'analyze-sentences':
-        # python sentiments.py --command analyze-sentences --input-pickle sa-structure.pickle --output-pickle sa-sentences.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
+        # python semantic_analysis.py --command analyze-sentences --input-pickle sa-structure.pickle --output-pickle sa-sentences.pickle --input-language <ISO 639-1 code> --working-language <iso 639-1 code>
         paragraphs = pickle.load(open(args['input-pickle'],'rb'))
         paragraphs, args, data = update_paragraphs(paragraphs,args,data)
     elif args['command'] == 'get-translations':
