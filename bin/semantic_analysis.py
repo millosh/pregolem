@@ -206,7 +206,7 @@ def update_paragraphs(paragraphs,args,data):
     nrel = 0
     start = 385
     stop = len(paragraphs)
-    stop = 390
+    stop = 386
     for pkey in paragraphs:
         if p <= start:
             next
