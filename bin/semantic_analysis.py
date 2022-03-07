@@ -207,6 +207,7 @@ def update_paragraphs(paragraphs,args,data):
     stop = len(paragraphs)
     stop = 1
     for pkey in paragraphs:
+        print(pkey, len(paragraphs))
         data['paragraphs'][pkey] = {
             'domains': {},
             'sentences': {},
