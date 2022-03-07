@@ -202,6 +202,7 @@ def process_text(args):
     return paragraphs
 
 def update_paragraphs(paragraphs,args,data):
+    paragrpahs = paragraphs
     p = 0
     nrel = 0
     for pkey in paragraphs:        
