@@ -202,13 +202,12 @@ def process_text(args):
     return paragraphs
 
 def update_paragraphs(paragraphs,args,data):
-    paragrpahs = paragraphs
     p = 0
     nrel = 0
     for pkey in paragraphs:        
         print(pkey)
         p += 1
-    return praragraphs, args, data
+    return paragraphs,args,data
 
 def main():
     args, data = get_args()
