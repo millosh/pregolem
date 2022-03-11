@@ -229,6 +229,7 @@ def update_paragraphs(paragraphs,args,data):
                 }
                 doc = args['nlp-input'](paragraphs[pkey]['sentences'][skey]['text'])
                 print(doc)
+                print(doc.sentiment)
                 tlist = list(paragraphs[pkey]['sentences'][skey]['tokens'].keys())
                 tmin = 0
                 tmax = max(tlist)
